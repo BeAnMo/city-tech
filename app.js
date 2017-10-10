@@ -2,6 +2,8 @@ var id = '1dtZyUAobcWC6yYbdsR1_Oww29XCbEUMABVD20w4gIpI';
 var url = `https://spreadsheets.google.com/feeds/list/${id}/2/public/full?alt=json`;
 
 
+/* retrieves only the id & summary from GSheets response:
+   { id: String, summary: String } */
 function createSummaries(json){
     var entries = json.feed.entry;
     
@@ -13,6 +15,8 @@ function createSummaries(json){
     });
 }
 
+
+/* fetches summaries from GSheet */
 async function getSummaries(){
     var fetched = await FetchSheets.json(url);
     var json = createSummaries(fetched);
@@ -21,53 +25,17 @@ async function getSummaries(){
 }
 
 
-function mergeTerms(objArr){
-    return objArr.reduce((acc, terms) => {
-        var keys = Object.keys(terms);
-        var result = {};
-        
-        for(var i = 0; i < keys.length; i++){
-            var term = keys[i];
-            var id = terms[term];
-            
-            if(acc[term]){
-                Object.assign(result, { [term]: [...acc[term], id] })
-            } else {
-                Object.assign(result, { [term]: [id] });
-            }
-        }
-        
-        return Object.assign(acc, result);
-    }, {});
-}
-
-
-function ResultsTable(results, totalNum){
-    var sorted = results.slice(0).sort((a, b) => a[1] < b[1]);
-    
-    return `
-    <section>
-        <h5>References from ${totalNum} postings</h5>
-        <table>
-            <tr>
-                <th>Language</th>
-                <th>References</th>
-            </tr>
-            ${sorted.reduce((acc, result) => {
-                return acc + `
-                    <tr>
-                        <td>${result[0]}</td>
-                        <td>${result[1]}</td>
-                    </tr>
-                `;
-    }, ``)}
-        </table>
-    </section>`;
-}
-
-
+/* main rendering function */
 function render(target, html){
     return target.innerHTML = html;
+}
+
+
+/* filters terms that have no references 
+   needed in main() */
+function filterWithNoRefs(acc, term){
+    // 'this is 'results' Object in main
+    return term in this ? acc : acc.concat(term);
 }
 
 
@@ -78,12 +46,20 @@ function main(summaries){
         return Words.presentTerms2(s.summary, s.id);
     });
     /* main data */
-    var results = mergeTerms(present);
+    var results = Calc.mergeTerms(present);
     var eachResultLength = Object.keys(results).map(r => {
         return [r, results[r].length];
     });
     
-    render(app, ResultsTable(eachResultLength, totalSummaries));
+    var allTerms = Words.terms.slice(0);
+    var noRefs = allTerms.reduce(filterWithNoRefs.bind(results), []);
+    
+    var termsGraph = Calc.createGraph(results);
+    
+    console.log(termsGraph);
+    
+    render(app, View.ResultsTable(eachResultLength, totalSummaries, noRefs));
+    console.log('initialized');
 }
 
 
@@ -93,4 +69,8 @@ function main(summaries){
     getSummaries()
         .then(main)
         .catch(console.log)
-})()
+})();
+
+
+
+
