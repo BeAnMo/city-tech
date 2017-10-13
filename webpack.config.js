@@ -60,10 +60,11 @@ module.exports = {
         path: path.resolve(__dirname, 'docs'),
         // makes webpack bundle available as library
         // can access in browser REPL under 'Jobs' object
-        libraryTarget: 'var',
-        library: 'Jobs'
+        //libraryTarget: 'var',
+        //library: 'Jobs'
     },
-    devtool: 'inline-source-map',
+    // don't use in production
+    //devtool: 'inline-source-map',
     module: {
         rules: [
             {
