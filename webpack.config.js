@@ -5,7 +5,12 @@ const path = require('path'),
       ExtractTextPlugin = require('extract-text-webpack-plugin'),
       CleanWebpackPlugin = require('clean-webpack-plugin');
 
-
+/* 
+- 97 mobile|98 desktop pagespeed score
+    - separate js: main/vendor/runtime
+    - css in js, not in head
+    - js at end of body
+*/
 module.exports = {
     entry: {
         main: './src/js/app.js',
@@ -16,7 +21,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             title: 'Nashville Job Tech',
             template: './src/index.ejs',
-            inject: 'head'
+            inject: 'body'
         }),
         new CleanWebpackPlugin(['docs']),
         new webpack.optimize.CommonsChunkPlugin({
