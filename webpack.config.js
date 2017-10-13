@@ -16,7 +16,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             title: 'Nashville Job Tech',
             template: './src/index.ejs',
-            inject: 'body'
+            inject: 'head'
         }),
         new CleanWebpackPlugin(['docs']),
         new webpack.optimize.CommonsChunkPlugin({
@@ -54,7 +54,7 @@ module.exports = {
                 }
             }
         }),
-        new ExtractTextPlugin('style.css')
+        //new ExtractTextPlugin('style.css')
     ],
     output: {
         //filename: 'output.js',
@@ -71,14 +71,14 @@ module.exports = {
         rules: [
             {
                 test: /\.css$/,
-                /*use: [
+                use: [
                     'style-loader',
                     'css-loader'
-                ]*/
-                use: ExtractTextPlugin.extract({
+                ]
+                /*use: ExtractTextPlugin.extract({
                     fallback: 'style-loader',
                     use: 'css-loader'
-                })
+                })*/
             },
         ]
     }
