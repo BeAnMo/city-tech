@@ -1,44 +1,45 @@
 import * as d3 from 'd3';
-import { intersect } from './calculations';
+import { intersect } from './utils';
+
 
 /* creates nodes for d3 graph */
 function createNodes(results){
-  const terms = Object.keys(results);
+    const terms = Object.keys(results);
   
-  return terms.map(term => {
-    return { term: term, size: results[term].length };
-  });
+    return terms.map(term => {
+        return { term: term, size: results[term].length };
+    });
 }
 
 function createLinks(results){
-  const terms = Object.keys(results);
-  const len = terms.length;
-  // enforce this order
-  // 0 -> 9 -> a > z
-  const byIncr = (a, b) => a > b;
-  let links = [];
+    const terms = Object.keys(results);
+    const len = terms.length;
+    // enforce this order
+    // 0 -> 9 -> a > z
+    const byIncr = (a, b) => a > b;
+    let links = [];
   
-  for(let i = 0; i < len; i++){
-    const source = terms[i];
-    const sourceIds = results[source];
-    sourceIds.sort(byIncr);
+    for(let i = 0; i < len; i++){
+        const source = terms[i];
+        const sourceIds = results[source];
+        sourceIds.sort(byIncr);
     
-    for(let j = 0; j < len; j++){
-      const target = terms[j];
-      const targetIds = results[target];
-      targetIds.sort(byIncr);
-      const shared = intersect(sourceIds, targetIds).length;
+        for(let j = 0; j < len; j++){
+            const target = terms[j];
+            const targetIds = results[target];
+            targetIds.sort(byIncr);
+            const shared = intersect(sourceIds, targetIds).length;
     
-      // until "C" regexp is more accurate
-      const c_test = source === 'C *' || target === 'C *' ? false : true;
+            // until "C" regexp is more accurate
+            const c_test = source === 'C *' || target === 'C *' ? false : true;
     
-      if(target !== source && shared > 0 && c_test){
-        links.push({ target, source, shared });
-      }
+            if(target !== source && shared > 0 && c_test){
+                links.push({ target, source, shared });
+            }
+        }   
     }
-  }
   
-  return links;
+    return links;
 }
 
 //@START-TEST
@@ -77,69 +78,77 @@ function createLinks(results){
 
 
 function Graph(nodes, links, graph, size){
-  const W = size;
-  const H = W;
+    const W = size;
+    const H = W;
 
-  const viz = d3.select(graph)
-    .append('svg')
-    .attr('width', W)
-    .attr('height', H);
+    const viz = d3.select(graph)
+        .append('svg')
+        .attr('width', W)
+        .attr('height', H);
 
-  const simulation = d3.forceSimulation()
-    .nodes(nodes);
+    const simulation = d3.forceSimulation()
+        .nodes(nodes);
 
-  simulation
-    .force('charge_force', d3.forceManyBody()
-        .strength(- (size))
-        .distanceMin(50)
-        .distanceMax(size / 2))
-    .force('center_force', d3.forceCenter(W / 2, H / 2));
+    simulation
+        .force('charge_force', d3.forceManyBody()
+            .strength(- (size))
+            .distanceMin(50)
+            .distanceMax(size / 2))
+        .force('center_force', d3.forceCenter(W / 2, H / 2));
     
     const popup = d3.select('body').append('div')
         .attr('class', 'popup')
         .style('opacity', 0);   
 
-  const node = viz.append("g")
-    .attr("class", "nodes")
-    .selectAll("circle")
-    .data(nodes)
-    .enter()
-    .append("circle")
-    .attr("r", 12)
-    .attr("fill", "red");
+    const node = viz.append("g")
+        .attr("class", "nodes")
+        .selectAll("circle")
+        .data(nodes)
+        .enter()
+        .append("circle")
+        .attr("r", 12)
+        .attr("fill", "red")
+        .call(d3.drag()
+            .on("start", dragstarted.bind(simulation))
+            .on("drag", dragged.bind(simulation)));
+            //.on("end", dragended.bind(simulation)));
+            
+    node.append('title').text(d => d.term);
  
 
-  function tickActions() {
-    //update circle positions to reflect node updates on each tick of the simulation 
-    node
-      .attr("cx", function(d) { return d.x; })
-      .attr("cy", function(d) { return d.y; });
+    function tickActions() {
+        //update circle positions to reflect node updates on each tick of the simulation 
+        node
+            .attr("cx", function(d) { return d.x; })
+            .attr("cy", function(d) { return d.y; });
 
-    link
-      .attr("x1", function(d) { return d.source.x; })
-      .attr("y1", function(d) { return d.source.y; })
-      .attr("x2", function(d) { return d.target.x; })
-      .attr("y2", function(d) { return d.target.y; });
-  }
-
-
-  const link_force =  d3.forceLink(links)
-    .id(function(d) { return d.term; });
+        link
+            .attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
+    }
 
 
-  simulation.on('tick', tickActions);
-  simulation.force("links",link_force);
+    const link_force =  d3.forceLink(links)
+        .id(function(d) { return d.term; });
 
-  const link = viz.append("g")
-    .attr("class", "links")
-    .selectAll("line")
-    .data(links)
-    .enter().append("line")
-    .attr("stroke-width", 3)
-    .style('stroke', linkColor);
+
+    simulation.on('tick', tickActions);
+    simulation.force("links",link_force);
+
+    const link = viz.append("g")
+        .attr("class", "links")
+        .selectAll("line")
+        .data(links)
+        .enter().append("line")
+        .attr("stroke-width", 3)
+        .style('stroke', linkColor);
         
-    Popup(graph, popup, node, d => `<p>${d.term}</p>`);
-    Popup(graph, popup, link, d => `<p>${d.source.term} & ${d.target.term} : <strong>${d.shared}</strong></p>`);
+    link.append('title').text(d => `${d.source.term} & ${d.target.term} : ${d.shared}`);
+        
+    //Popup(graph, popup, node, d => `<p>${d.term}</p>`);
+    //Popup(graph, popup, link, d => `<p>${d.source.term} & ${d.target.term} : <strong>${d.shared}</strong></p>`);
 }
 
 
@@ -185,6 +194,24 @@ function linkColor(d){
         n < 27 ? '#2ff' :
         n < 35 ? '#0ff' : '#00f'
     );
+}
+
+
+function dragstarted(d){
+    if (!d3.event.active) this.alphaTarget(0.3).restart();
+    d.fx = d.x;
+    d.fy = d.y;
+}
+
+function dragged(d){
+    d.fx = d3.event.x;
+    d.fy = d3.event.y;
+}
+
+function dragended(d){
+    if (!d3.event.active) this.alphaTarget(0);
+    d.fx = null;
+    d.fy = null;
 }
 
 
