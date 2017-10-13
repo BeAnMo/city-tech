@@ -124,7 +124,7 @@ export const App = {
 
 
 /* initialize app */
-window.onload = () => {
+(() => {
     const initAndRender = json => {
         App.ajax = json;
         App.graph.innerHTML = '';
@@ -137,7 +137,7 @@ window.onload = () => {
     return getJSON(SS_URL)
         .then(initAndRender)
         .catch(console.log);
-};
+})();
 
 
 
