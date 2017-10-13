@@ -1,9 +1,6 @@
-// css
-//import '../css/style.css';
-
-import { mergeTerms, createGraph, intersect } from './calculations';
+import { mergeTerms } from './calculations';
 import { getJSON } from './fetch-sheet';
-import { presentTerms, presentTerms2, TERMS } from './words-play';
+import { presentTermsWithKey, TERMS } from './words-play';
 import { ResultsTable, NoRefsList } from './components';
 import { Graph, createNodes, createLinks } from './graph';
 
@@ -61,8 +58,7 @@ function getClientSize(docWidth){
 }
 
 
-/* Object for working with app in web console: 
-   'Jobs.App' */
+/* Object for working with app in web console: 'App' */
 export const App = {
 
     // unfiltered GSheets response
@@ -94,7 +90,7 @@ export const App = {
     },
     get presentTerms() {
         return this.data.map(s => {
-            return presentTerms2(s.summary, s.id);
+            return presentTermsWithKey(s.summary, s.id);
         }); 
     },
     get termsIndex(){
@@ -117,8 +113,6 @@ export const App = {
 
     // for REPL debugging
     debug: {
-        intersect,
-        createLinks
     }
 };
 
@@ -138,6 +132,5 @@ export const App = {
         .then(initAndRender)
         .catch(console.log);
 })();
-
 
 

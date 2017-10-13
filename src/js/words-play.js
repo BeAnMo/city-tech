@@ -1,4 +1,5 @@
 /* for filtering terms with regular expressions */
+import { createMetonymRXs } from './utils';
     
 const LANG_TERMS = {
     Awk:            ['awk'],
@@ -28,40 +29,36 @@ const LANG_TERMS = {
     'Swift *':      ['swift'],
     'Visual Basic': ['visual basic', 'visualbasic', 'vb', 'vba'],
 };
+
+const SPECIAL_CASES = {
+    sql: /sql/i,
+    'c++': /c\+\+/,
+    'c': /(^|[^A-Za-z])c($|[^A-Za-z\+])/
+};
+
 /* for storing IDs: { lang: [...Id] } */
 const TERMS = Object.keys(LANG_TERMS);
+
+/* array of term regexps */
+const RXS = ((termsObj) => {
+    const keys = Object.keys(termsObj);
+    
+    return keys.map(k => {
+        return {
+            lang: k,
+            rx: createRX(termsObj[k])
+        };
+    });
+})(LANG_TERMS);
+
 
 /* Array -> RegExp
     builds a RegExp from an array of phrases to allow for multiple cases
     such as 'c#' or 'c sharp', 'javascript' or 'js'  */
 function createRX(phrases){
-    // creates a RegExp pattern from a string
-    const rx = `${phrases.reduce((base, phrase, i) => {
-        // check phrase for spaces & '+'
-        if(phrase === 'c++'){
-            phrase = 'c\\+\\+';
-        } else if(phrase.indexOf(' ') > -1){
-            phrase = phrase.split(' ').join('\\s');
-        }
-        // patterns match a given phrase surrounded by non letter characters
-        // so 'scheme' will pass but not 'schemer'
-        if(phrase === 'sql'){
-            return phrase;
-        // need case for 'c', can't be followed by '+'
-        } else if(phrase === 'c'){
-            return `(^|[^A-Za-z])${phrase}($|[^A-Za-z\\+])`;
-        
-        } else if(i === 0){
-            // matches phrase if not bordered by other letters
-            // sql,php,js will match, but not sqlphpjs
-            return base + `(^|[^A-Za-z])${phrase}($|[^A-Za-z])`;
-        } else {
-            return base + `|(^|[^A-Za-z])${phrase}($|[^A-Za-z])`;
-        }
-        
-    }, '')}`;
-    
-    return new RegExp(rx, 'i');
+    return phrases[0] in SPECIAL_CASES ?
+        SPECIAL_CASES[phrases[0]] :
+        new RegExp(createMetonymRXs(phrases), 'i');    
 }
 
 
@@ -75,38 +72,22 @@ function presentTerms(txt){
 }
 
 
-function presentTerms2(txt, id){
+/* collects present terms in a job post:
+   {...{ term: jobkey }} */
+function presentTermsWithKey(txt, id){
     // merge w/ present terms?
-    // 2 loops seems unecessary
-    const tested = RXS.reduce((acc, term) => {
-        return term.rx.test(txt) ?
-            acc.concat(term.lang) :
-            acc;
-    }, []);
+    // 2 loops seems unecessary    
+    const tested = presentTerms(txt);
     
-    const results = tested.reduce((acc, t) => {
+    return tested.reduce((acc, t) => {
         return Object.assign(acc, { [t]: id });
     }, {});
-    
-    return results;
 }
-
-
-const RXS = ((termsObj) => {
-    const keys = Object.keys(termsObj);
-    
-    return keys.map(k => {
-        return {
-            lang: k,
-            rx: createRX(termsObj[k])
-        };
-    });
-})(LANG_TERMS);
 
 
 export {
     presentTerms,
-    presentTerms2,
+    presentTermsWithKey,
     TERMS
 };
 
