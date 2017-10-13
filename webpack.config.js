@@ -18,14 +18,16 @@ module.exports = {
             inject: 'body'
         }),
         new CleanWebpackPlugin(['docs']),
-        new UglifyJSPlugin({
-            sourceMap: true
-        }),
         new webpack.optimize.CommonsChunkPlugin({
             name: ['vendor']
         }),
         new webpack.optimize.CommonsChunkPlugin({
             name: ['runtime']
+        }),
+        new UglifyJSPlugin({
+            sourceMap: true,
+            extractComments: true,
+            parallel: true
         })
     ],
     output: {
