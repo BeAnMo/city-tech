@@ -7,8 +7,8 @@ import { presentTerms, presentTerms2, TERMS } from './words-play';
 import { ResultsTable, NoRefsList } from './components';
 import { Graph, createNodes, createLinks } from './graph';
 
-const id = '1dtZyUAobcWC6yYbdsR1_Oww29XCbEUMABVD20w4gIpI';
-const url = `https://spreadsheets.google.com/feeds/list/${id}/2/public/full?alt=json`;
+const SS_ID = '1dtZyUAobcWC6yYbdsR1_Oww29XCbEUMABVD20w4gIpI';
+const SS_URL = `https://spreadsheets.google.com/feeds/list/${SS_ID}/2/public/full?alt=json`;
 
 
 /* YYYY-MM-DD */
@@ -33,15 +33,6 @@ function createSummaries(json){
         };
     });
 }
-
-
-/* fetches summaries from GSheet */
-/*async function getSummaries(){
-    var fetched = await getJSON(url);
-    var json = createSummaries(fetched);
-    
-    return json;
-}*/
 
 
 /* main rendering function */
@@ -92,6 +83,7 @@ export const App = {
       
     // app data
     graphSize: getClientSize(document.documentElement.clientWidth),
+    allTermStrings: TERMS.slice(0),
     
     get postedDate(){
         const date = this.response.feed.updated['$t'];
@@ -109,11 +101,10 @@ export const App = {
         return mergeTerms(this.presentTerms);
     },
     get eachIndexLength(){
-        return Object.keys(this.termsIndex).map(r => {
-            return [r, this.termsIndex[r].length];
+        return Object.keys(this.termsIndex).map(term => {
+            return [term, this.termsIndex[term].length];
         });
     },
-    allTermStrings: TERMS.slice(0),
     get allWithNoRefs(){
         return this.allTermStrings.reduce(filterWithNoRefs.bind(this.termsIndex), []); 
     },
@@ -124,6 +115,7 @@ export const App = {
         return createLinks(this.termsIndex);
     },
 
+    // for REPL debugging
     debug: {
         intersect,
         createLinks
@@ -142,7 +134,7 @@ export const App = {
         render(noRefsList, NoRefsList(App.allWithNoRefs));
     };
 
-    return getJSON(url)
+    return getJSON(SS_URL)
         .then(initAndRender)
         .catch(console.log);
 })();

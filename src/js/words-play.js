@@ -76,6 +76,8 @@ function presentTerms(txt){
 
 
 function presentTerms2(txt, id){
+    // merge w/ present terms?
+    // 2 loops seems unecessary
     const tested = RXS.reduce((acc, term) => {
         return term.rx.test(txt) ?
             acc.concat(term.lang) :
@@ -110,7 +112,7 @@ export {
 
 
 
-//@TEST
+//@START-TEST
 (() => {
     const tests = [
         { 
@@ -153,4 +155,5 @@ export {
     console.log(`${passed} out of ${total} tests passed`);
     console.log('----------------------------');
 })();
+//@END-TEST
 

@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import { intersect } from './calculations';
 
 /* creates nodes for d3 graph */
@@ -40,7 +41,7 @@ function createLinks(results){
   return links;
 }
 
-//@TEST
+//@START-TEST
 (() => {
     const t0 = {
         Scala: [ "d996ecb107d95f5e" ],
@@ -72,6 +73,7 @@ function createLinks(results){
     console.log(`${passed} out of ${total} tests passed`);
     console.log('----------------------------');
 })();
+//@END-TEST
 
 
 function Graph(nodes, links, graph, size){
