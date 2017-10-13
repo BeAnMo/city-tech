@@ -1,3 +1,5 @@
+import '../css/style.css';
+
 
 function ResultsTable(results, totalNum, date){
     var sorted = results.slice(0).sort((a, b) => a[1] < b[1]);

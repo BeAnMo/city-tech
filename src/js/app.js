@@ -1,5 +1,5 @@
 // css
-import '../css/style.css';
+//import '../css/style.css';
 
 import { mergeTerms, createGraph, intersect } from './calculations';
 import { getJSON } from './fetch-sheet';

@@ -1,7 +1,8 @@
 const path = require('path'),
       webpack = require('webpack'),
       HtmlWebpackPlugin = require('html-webpack-plugin'),
-      UglifyJSPlugin = require('uglifyjs-webpack-plugin')
+      UglifyJSPlugin = require('uglifyjs-webpack-plugin'),
+      ExtractTextPlugin = require('extract-text-webpack-plugin'),
       CleanWebpackPlugin = require('clean-webpack-plugin');
 
 
@@ -52,7 +53,8 @@ module.exports = {
                     reduce_vars: true,
                 }
             }
-        })
+        }),
+        new ExtractTextPlugin('style.css')
     ],
     output: {
         //filename: 'output.js',
@@ -69,10 +71,14 @@ module.exports = {
         rules: [
             {
                 test: /\.css$/,
-                use: [
+                /*use: [
                     'style-loader',
                     'css-loader'
-                ]
+                ]*/
+                use: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: 'css-loader'
+                })
             },
         ]
     }
