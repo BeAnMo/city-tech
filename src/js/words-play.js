@@ -32,8 +32,8 @@ const LANG_TERMS = {
 
 const SPECIAL_CASES = {
     sql: /sql/i,
-    'c++': /c\+\+/,
-    'c': /(^|[^A-Za-z])c($|[^A-Za-z\+])/
+    'c++': /c\+\+/i,
+    'c': /(^|[^A-Za-z])c($|[^A-Za-z\+])/i
 };
 
 /* for storing IDs: { lang: [...Id] } */

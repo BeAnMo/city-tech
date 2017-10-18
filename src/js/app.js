@@ -31,10 +31,29 @@ function createSummaries(json){
     });
 }
 
+function createSummaries2(json){
+    const entries = json.feed.entry;
 
-/* main rendering function */
-function render(target, html){
-    return target.innerHTML = html;
+    return extractFromObjectArray(enties, )
+}
+
+/* Array-of-Object, ...String -> Array-of-Object */
+function extractFromObjectArrayPath(objArr, ...path){    
+    return objArr.reduce((acc, obj) => {
+        const objExists = valueAtPath(obj, ...path);
+        const lastPath = path[path.length - 1];
+
+        return objExists ? acc.concat({ [lastPath]: objExists }) : acc;
+    }, []);
+}
+
+/* Object, ...String -> Object 
+   dives into an object and retrieves a value at a given path:
+   object[p1][p2][pn]...*/
+function valueAtPath(obj, ...path){
+    const applyPath = (obj, path) => obj[path];
+    
+    return applyPath.apply(null, [obj, ...path]);
 }
 
 
