@@ -1,4 +1,4 @@
-import { mergeTerms } from './calculations';
+import { mergeTerms, extractPaths } from './calculations';
 import { getJSON } from './fetch-sheet';
 import { presentTermsWithKey, TERMS } from './words-play';
 import { ResultsTable, NoRefsList } from './components';
@@ -22,7 +22,7 @@ function formatDate(d){
    { id: String, summary: String } */
 function createSummaries(json){
     const entries = json.feed.entry;
-    
+
     return entries.map(e => {
         return {
             id: e['gsx$id']['$t'],
@@ -31,31 +31,12 @@ function createSummaries(json){
     });
 }
 
+//!!!
 function createSummaries2(json){
     const entries = json.feed.entry;
-
-    return extractFromObjectArray(enties, )
+    // need to be able to assign custom keys
+    return extractPaths(entries, ['gsx$id', '$t'], ['gsx$summary', '$t']);
 }
-
-/* Array-of-Object, ...String -> Array-of-Object */
-function extractFromObjectArrayPath(objArr, ...path){    
-    return objArr.reduce((acc, obj) => {
-        const objExists = valueAtPath(obj, ...path);
-        const lastPath = path[path.length - 1];
-
-        return objExists ? acc.concat({ [lastPath]: objExists }) : acc;
-    }, []);
-}
-
-/* Object, ...String -> Object 
-   dives into an object and retrieves a value at a given path:
-   object[p1][p2][pn]...*/
-function valueAtPath(obj, ...path){
-    const applyPath = (obj, path) => obj[path];
-    
-    return applyPath.apply(null, [obj, ...path]);
-}
-
 
 /* filters terms that have no references 
    needed in main() */
@@ -63,7 +44,6 @@ function filterWithNoRefs(acc, term){
     // 'this is 'results' Object in main
     return term in this ? acc : acc.concat(term);
 }
-
 
 /* gets the size of the client's browser window */
 function getClientSize(docWidth){
@@ -74,6 +54,11 @@ function getClientSize(docWidth){
     } else {
         return 600;
     }
+}
+
+/* main rendering function */
+function render(target, html){
+    return target.innerHTML = html;
 }
 
 

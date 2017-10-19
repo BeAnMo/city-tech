@@ -65,7 +65,7 @@ function multipleIntersect(terms, data){
     // first
     let result = sorted[0];
     // rest
-    let sorted = sorted.slice(1);
+    sorted = sorted.slice(1);
     
     while(sorted.length !== 0 && result.length !== 0){
         // intersect first & second - smallest arrays
