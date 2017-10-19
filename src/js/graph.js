@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { intersect } from './utils';
+import { intersect } from './data-processing/info';
 
 
 /* creates nodes for d3 graph */

@@ -1,4 +1,5 @@
-import { mergeTerms, extractPaths } from './calculations';
+//import { mergeTerms, extractPaths } from './calculations';
+import { createIndexes, extractPaths } from './data-processing/info';
 import { getJSON } from './fetch-sheet';
 import { presentTermsWithKey, TERMS } from './words-play';
 import { ResultsTable, NoRefsList } from './components';
@@ -98,7 +99,7 @@ export const App = {
         }); 
     },
     get termsIndex(){
-        return mergeTerms(this.presentTerms);
+        return createIndexes(this.presentTerms);
     },
     get eachIndexLength(){
         return Object.keys(this.termsIndex).map(term => {
@@ -126,7 +127,7 @@ export const App = {
     const initAndRender = json => {
         App.ajax = json;
         App.graph.innerHTML = '';
-        
+
         render(resultsTable, ResultsTable(App.eachIndexLength, App.totalSummaries, App.postedDate));
         Graph(App.graphNodes, App.graphLinks, App.graph, App.graphSize);                         
         render(noRefsList, NoRefsList(App.allWithNoRefs));

@@ -1,74 +1,5 @@
-/* creates an index of terms with their matching ids:
-   {...{ term: [...id] }} */
-function mergeTerms(objArr){
-    return objArr.reduce((acc, terms) => {
-        const keys = Object.keys(terms);
-        let result = {};
-        
-        for(let i = 0; i < keys.length; i++){
-            const term = keys[i];
-            const id = terms[term];
-            
-            if(acc[term]){
-                Object.assign(result, { [term]: [...acc[term], id] })
-            } else {
-                Object.assign(result, { [term]: [id] });
-            }
-        }
-        
-        return Object.assign(acc, result);
-    }, {});
-}
-
-/* 
-{
-    term: String,
-    total: Number,
-    neighbors: [...{ term: String, totalShared: Number }]
-}
-*/
-// unused with d3
-function GraphNode(term, total, neighbors){
-    return {
-        term,
-        total,
-        neighbors
-    };
-}
-
-// unused with d3
-function createGraph(termsObj){
-    var nodes = [];
-    var terms = Object.keys(termsObj);
-    var termsLen = terms.length;
-    
-    for(var i = 0; i < termsLen; i++){
-        var neighbors = [];
-        var term = terms[i];
-        var ids = termsObj[term];
-        
-        for(var j = 0; j < termsLen; j++){
-            var neighbor = terms[j];
-            var neighborIds = termsObj[neighbor];
-            
-            if(neighbor !== term){
-                var intersection = intersect(ids, neighborIds).length;
-                
-                if(intersection > 0){
-                   neighbors.push({ [neighbor]: intersection }); 
-                }     
-            }
-        }
-        
-        nodes.push(GraphNode(term, ids.length, neighbors));
-    }
-    
-    return nodes;
-}
-
-
 /* Array-of-Object, ...String -> Array-of-Object */
-function extractPaths(objArr, ...path){    
+export function extractPaths(objArr, ...path){    
     return objArr.reduce((acc, obj) => {
         const objExists = extractFromPaths(obj, ...path);
         const lastPath = path[path.length - 1];
@@ -98,7 +29,7 @@ function recurPath(obj, arr, lastKey=''){
     }
 }
 
-//@START-TEST
+//@START-TEST for paths
 (() => {
     const t0 = [
         {a: 1, b: 2, c: {
@@ -145,12 +76,4 @@ function recurPath(obj, arr, lastKey=''){
     console.assert(ex1[1].a1 === 'wiif', 'extractPaths: !== wiif');
     console.assert(ex2[0].c1 === 'hello', 'extractPaths: !== hello');
     console.assert(ex2[2].c1 === undefined, 'extractPaths: !== undefined');
-})();
-
-
-export {
-    mergeTerms,
-    extractPaths
-};
-
-
+})();//@END-TEST
