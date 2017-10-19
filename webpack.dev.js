@@ -8,10 +8,11 @@ module.exports = merge(common, {
     devServer: {
         contentBase: './docs'
     },
-    output: { // Jobs.App not accessible with separate WB configs
-        /* makes webpack bundle available as library
+    /* makes webpack bundle available as library
            can access in browser REPL under 'Jobs' object */
+    /*output: { // Jobs.App not accessible with separate WB configs
+        
         libraryTarget: 'var',
         library: 'Jobs'
-    },
+    }, */
 });

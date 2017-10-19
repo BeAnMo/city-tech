@@ -30,9 +30,9 @@ function createPhraseRX(phrase){
         - AND, OR, NOT...
         allow for more complex queries  */
 function intersect(arr1, arr2){
-    var result = [];
-    var a1 = arr1;
-    var a2 = arr2;
+    let result = [];
+    let a1 = arr1;
+    let a2 = arr2;
 
     while(a1.length !== 0 && a2.length !== 0){
         if(a1[0] === a2[0]){
@@ -56,16 +56,16 @@ function multipleIntersect(terms, data){
        starting with smallest arrays means 
        intermediate results will be no bigger
        than smallest array */
-    var sorted = terms.map((term) => {
+    let sorted = terms.map((term) => {
         return data[term];
     }).sort((a, b) => {
         return a - b;
     });
     
     // first
-    var result = sorted[0];
+    let result = sorted[0];
     // rest
-    var sorted = sorted.slice(1);
+    sorted = sorted.slice(1);
     
     while(sorted.length !== 0 && result.length !== 0){
         // intersect first & second - smallest arrays
