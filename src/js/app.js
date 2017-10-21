@@ -1,12 +1,7 @@
-//import { mergeTerms, extractPaths } from './calculations';
 import { createIndexes, extractPaths } from './data-processing/info';
-import { getJSON } from './fetch-sheet';
 import { presentTermsWithKey, TERMS } from './words-play';
-import { ResultsTable, NoRefsList } from './components';
 import { Graph, createNodes, createLinks } from './graph';
-
-const SS_ID = '1dtZyUAobcWC6yYbdsR1_Oww29XCbEUMABVD20w4gIpI';
-const SS_URL = `https://spreadsheets.google.com/feeds/list/${SS_ID}/2/public/full?alt=json`;
+import { ResultsTable, NoRefsList } from './components';
 
 
 /* YYYY-MM-DD */
@@ -65,7 +60,6 @@ function render(target, html){
 
 /* Object for working with app in web console: 'App' */
 export const App = {
-
     // unfiltered GSheets response
     response: {},
     set ajax(json){
@@ -116,18 +110,33 @@ export const App = {
         return createLinks(this.termsIndex);
     },
 
+    /* main rendering function */
+    render(target, html){
+        return target.innerHTML = html;
+    },
+
+    initAndRender(json){
+        this.ajax = json;
+        this.graph.innerHTML = '';
+        
+        this.render(resultsTable, ResultsTable(this.eachIndexLength, this.totalSummaries, this.postedDate));
+        Graph(this.graphNodes, this.graphLinks, this.graph, this.graphSize);                         
+        this.render(noRefsList, NoRefsList(this.allWithNoRefs));
+    },
+
     // for REPL debugging
     debug: {
     }
 };
 
 
-/* initialize app */
+/* initialize app
 (() => {
-    const initAndRender = json => {
-        App.ajax = json;
-        App.graph.innerHTML = '';
 
+    const initAndRender = json => {
+        //App.ajax = json;
+        App.graph.innerHTML = '';
+        
         render(resultsTable, ResultsTable(App.eachIndexLength, App.totalSummaries, App.postedDate));
         Graph(App.graphNodes, App.graphLinks, App.graph, App.graphSize);                         
         render(noRefsList, NoRefsList(App.allWithNoRefs));
@@ -137,5 +146,5 @@ export const App = {
         .then(initAndRender)
         .catch(console.log);
 })();
-
+*/
 
