@@ -15,8 +15,9 @@ function formatDate(d){
 }
 
 /* retrieves only the id & summary from GSheets response:
-   { id: String, summary: String } */
-function createSummaries(json){
+   { id: String, summary: String } 
+   should have superior runtime */
+function createSummaries1(json){
     const entries = json.feed.entry;
 
     return entries.map(e => {
@@ -27,11 +28,12 @@ function createSummaries(json){
     });
 }
 
-//!!!
-function createSummaries2(json){
+/* wanted to test out dynamically applying object path
+   switch to the old if too slow */
+function createSummaries(json){
     const entries = json.feed.entry;
     // need to be able to assign custom keys
-    return extractPaths(entries, ['gsx$id', '$t'], ['gsx$summary', '$t']);
+    return extractPaths(entries, ['id', 'summary'], ['gsx$id', '$t'], ['gsx$summary', '$t']);
 }
 
 /* filters terms that have no references 

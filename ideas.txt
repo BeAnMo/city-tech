@@ -1,0 +1,35 @@
+**** term input organization
+spreadsheet columns:
+[...[display, [...phrases], language] - how will this be accessed as JSON?
+- display: String 
+    (formatted for displaying terms, 'JavaScript', not 'javascript' or 'js')
+- phrases: [...String] 
+    (for creating regex patterns)
+- language: String or False 
+    (is term associated with a language? 
+        - if yes, language = display term for language
+        - otherwise false)
+
+filtering for terms:
+- if a job post contains a term that references a language 
+  but not the language itself, make sure that the referenced
+  language is counted
+
+app data:
+- raw response: json
+- all terms: [...String]
+- summaries: [...{ id: String, summary: String }]
+- total summaries: summaries.length
+- posted date: date
+- presentTerms: {...{ term: id }} - pulls out individual terms from summaries
+- terms index: {...{ term: [...id] }} - merges presentTerms
+display data:
+- each index length: [...[term, term.id.length]]
+- no refs: [...String] - filters all terms for those with no references
+- graphNode: [...{ term: String, size: term.id.length }] - same as each index length
+- graphLink: [...{ target: term, source: term, shared: Number }]
+
+possible data:
+- { String: {...String: true }} - links a term to children terms
+    - ie { 'JavaScript': { 'D3': true, 'jQuery': true, ... }}
+- { term: String, ids: [...String], forLanguage: String or False }

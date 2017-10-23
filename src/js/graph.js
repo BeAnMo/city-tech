@@ -16,18 +16,17 @@ function createLinks(results){
     const len = terms.length;
     // enforce this order
     // 0 -> 9 -> a > z
-    const byIncr = (a, b) => a > b;
+    const byIncr = (a, b) => a > b; // this should be a - b, but this works on firefox...?
+    console.assert([2,4,3,1].sort(byIncr)[3] === 4, 'byIncr in createLinks');
     let links = [];
   
     for(let i = 0; i < len; i++){
         const source = terms[i];
-        const sourceIds = results[source];
-        sourceIds.sort(byIncr);
+        const sourceIds = results[source].sort(byIncr);
     
         for(let j = 0; j < len; j++){
             const target = terms[j];
-            const targetIds = results[target];
-            targetIds.sort(byIncr);
+            const targetIds = results[target].sort(byIncr);
             const shared = intersect(sourceIds, targetIds).length;
     
             // until "C" regexp is more accurate

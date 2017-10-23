@@ -7,6 +7,7 @@ MESSAGES:
 */
 const SS_ID = '1dtZyUAobcWC6yYbdsR1_Oww29XCbEUMABVD20w4gIpI';
 const SS_URL = `https://spreadsheets.google.com/feeds/list/${SS_ID}/2/public/full?alt=json`;
+const TERMS_URL = `https://spreadsheets.google.com/feeds/list/${SS_ID}/3/public/full?alt=json`;
 
 
 onmessage = function(e){

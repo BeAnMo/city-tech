@@ -63,6 +63,7 @@ const OS_TERMS = {
 };
 
 const SPECIAL_CASES = {
+    '.net': /\.net/i,
     sql: /sql/i,
     'c++': /c\+\+/i,
     'c': /(^|[^A-Za-z])c($|[^A-Za-z\+])/i
