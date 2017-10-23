@@ -1,35 +1,9 @@
-/* creates a single RX of multiple given metonyms */
-function createMetonymRXs(metonyms){
-    return metonyms.reduce((base, metonym, index) => {
-        if(index === 0){
-            return base + createPhraseRX(metonym);
-        } else {
-            return base + '|' + createPhraseRX(metonym);
-        }
-    }, '');
-}
-
-
-/* creates a RX string to filter from text
-   can be at start/end of a text
-   can be surrounded by non-letter characters:
-   'hello', '/hello/', ',hello1' will match,
-   but not 'ahello' or 'hellop' */ 
-function createPhraseRX(phrase){
-    const hasSpace = phrase.indexOf(' ') > -1 ?
-          phrase.split(' ').join('\\s') :
-          phrase;
-    
-    return `(^|[^A-Za-z])${hasSpace}($|[^A-Za-z])`;   
-}
-
-
 /* Array, Array -> Array
     assumes both arrays are sorted
     - could take an additional arg:
         - AND, OR, NOT...
         allow for more complex queries  */
-function intersect(arr1, arr2){
+export function intersect(arr1, arr2){
     let result = [];
     let a1 = arr1;
     let a2 = arr2;
@@ -51,11 +25,11 @@ function intersect(arr1, arr2){
 
 /* Array -> Array
     returns array ids that are present in all given langs  */
-function multipleIntersect(terms, data){
+export function multipleIntersect(terms, data){
     /* sorts langs by array size
-       starting with smallest arrays means 
-       intermediate results will be no bigger
-       than smallest array */
+        starting with smallest arrays means 
+        intermediate results will be no bigger
+        than smallest array */
     let sorted = terms.map((term) => {
         return data[term];
     }).sort((a, b) => {
@@ -74,10 +48,4 @@ function multipleIntersect(terms, data){
     }
     
     return result;
-}
-
-
-export {
-    createMetonymRXs,
-    intersect
 }

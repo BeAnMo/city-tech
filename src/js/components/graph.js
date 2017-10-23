@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { intersect } from './utils';
+import { intersect } from '../data-processing/index';
 
 
 /* creates nodes for d3 graph */
@@ -16,18 +16,18 @@ function createLinks(results){
     const len = terms.length;
     // enforce this order
     // 0 -> 9 -> a > z
+    // this sort work on FF, but not on chrome
+    // a - b doesn't work on either?
     const byIncr = (a, b) => a > b;
     let links = [];
   
     for(let i = 0; i < len; i++){
         const source = terms[i];
-        const sourceIds = results[source];
-        sourceIds.sort(byIncr);
+        const sourceIds = results[source].sort(byIncr);
     
         for(let j = 0; j < len; j++){
             const target = terms[j];
-            const targetIds = results[target];
-            targetIds.sort(byIncr);
+            const targetIds = results[target].sort(byIncr);
             const shared = intersect(sourceIds, targetIds).length;
     
             // until "C" regexp is more accurate

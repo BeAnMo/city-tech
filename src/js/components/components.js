@@ -1,9 +1,9 @@
-import '../css/style.css';
+import '../../css/style.css';
 
 
 function ResultsTable(results, totalNum, date){
     // not working with chrome?
-    const sorted = results.slice(0).sort((a, b) => a[1] < b[1]);
+    const sorted = results.slice(0).sort((a, b) => b[1] - a[1]);
     
     return `
     <div class="table">

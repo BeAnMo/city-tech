@@ -1,8 +1,16 @@
-import { mergeTerms, extractPaths } from './calculations';
+import { 
+    createIndexes, 
+    extractPaths,
+    presentTermsWithKey,
+    TERMS 
+} from './data-processing/index';
+import { ResultsTable, 
+    NoRefsList, 
+    Graph, 
+    createNodes, 
+    createLinks 
+} from './components/index';
 import { getJSON } from './fetch-sheet';
-import { presentTermsWithKey, TERMS } from './words-play';
-import { ResultsTable, NoRefsList } from './components';
-import { Graph, createNodes, createLinks } from './graph';
 
 const SS_ID = '1dtZyUAobcWC6yYbdsR1_Oww29XCbEUMABVD20w4gIpI';
 const SS_URL = `https://spreadsheets.google.com/feeds/list/${SS_ID}/2/public/full?alt=json`;
@@ -98,7 +106,7 @@ export const App = {
         }); 
     },
     get termsIndex(){
-        return mergeTerms(this.presentTerms);
+        return createIndexes(this.presentTerms);
     },
     get eachIndexLength(){
         return Object.keys(this.termsIndex).map(term => {
