@@ -2,7 +2,7 @@ import {
     createIndexes, 
     extractPaths,
     presentTermsWithKey,
-    TERMS 
+    createRXObj
 } from './data-processing/index';
 import { ResultsTable, 
     NoRefsList, 
@@ -11,10 +11,12 @@ import { ResultsTable,
     createLinks 
 } from './components/index';
 import { getJSON } from './fetch-sheet';
+import { LANG_TERMS, SPECIAL_CASES, TERMS } from './inputs';
 
 const SS_ID = '1dtZyUAobcWC6yYbdsR1_Oww29XCbEUMABVD20w4gIpI';
-const SS_URL = `https://spreadsheets.google.com/feeds/list/${SS_ID}/2/public/full?alt=json`;
-
+const SUMMARIES_URL = `https://spreadsheets.google.com/feeds/list/${SS_ID}/2/public/full?alt=json`;
+const TERMS_URL = `https://spreadsheets.google.com/feeds/list/${SS_ID}/3/public/full?alt=json`;
+const RXS = createRXObj(LANG_TERMS, SPECIAL_CASES);
 
 /* YYYY-MM-DD */
 function formatDate(d){
@@ -102,7 +104,7 @@ export const App = {
     },
     get presentTerms() {
         return this.data.map(s => {
-            return presentTermsWithKey(s.summary, s.id);
+            return presentTermsWithKey(s.summary, s.id, RXS);
         }); 
     },
     get termsIndex(){
@@ -140,7 +142,7 @@ export const App = {
         render(noRefsList, NoRefsList(App.allWithNoRefs));
     };
 
-    return getJSON(SS_URL)
+    return getJSON(SUMMARIES_URL)
         .then(initAndRender)
         .catch(console.log);
 })();

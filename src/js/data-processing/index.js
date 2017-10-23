@@ -2,7 +2,7 @@ import { intersect, multipleIntersect } from './arrays';
 import { createMetonymRXs as createRXs } from './regexes';
 import { objectArrayToObject as createIndexes } from './term-indexes';
 import { extractPaths } from './paths';
-import { presentTermsWithKey, TERMS } from './words';
+import { presentTermsWithKey, createRXObj } from './words';
 
 /* data processing functions */
 
@@ -13,5 +13,5 @@ export {
     createIndexes,
     extractPaths,
     presentTermsWithKey,
-    TERMS,
+    createRXObj,
 }
