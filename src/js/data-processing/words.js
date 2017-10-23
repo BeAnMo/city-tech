@@ -1,5 +1,5 @@
 /* for filtering terms with regular expressions */
-import { createMetonymRXs } from './utils';
+import { createMetonymRXs } from './regexes';
     
 const LANG_TERMS = {
     Awk:            ['awk'],
@@ -37,7 +37,7 @@ const SPECIAL_CASES = {
 };
 
 /* for storing IDs: { lang: [...Id] } */
-const TERMS = Object.keys(LANG_TERMS);
+export const TERMS = Object.keys(LANG_TERMS);
 
 /* array of term regexps */
 const RXS = ((termsObj) => {
@@ -74,7 +74,7 @@ function presentTerms(txt){
 
 /* collects present terms in a job post:
    {...{ term: jobkey }} */
-function presentTermsWithKey(txt, id){
+export function presentTermsWithKey(txt, id){
     // merge w/ present terms?
     // 2 loops seems unecessary    
     const tested = presentTerms(txt);
@@ -83,14 +83,6 @@ function presentTermsWithKey(txt, id){
         return Object.assign(acc, { [t]: id });
     }, {});
 }
-
-
-export {
-    presentTerms,
-    presentTermsWithKey,
-    TERMS
-};
-
 
 
 //@START-TEST
