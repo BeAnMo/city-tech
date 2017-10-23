@@ -2,7 +2,7 @@ import {
     createIndexes, 
     extractPaths,
     presentTermsWithKey,
-    createRXObj
+    createRegExp
 } from './data-processing/index';
 import { ResultsTable, 
     NoRefsList, 
@@ -10,13 +10,9 @@ import { ResultsTable,
     createNodes, 
     createLinks 
 } from './components/index';
-import { getJSON } from './fetch-sheet';
-import { LANG_TERMS, SPECIAL_CASES, TERMS } from './inputs';
+import { getUrls } from './fetch-sheet';
+import { SUMMARIES_URL, TERMS_URL, SPECIAL_CASES } from './inputs';
 
-const SS_ID = '1dtZyUAobcWC6yYbdsR1_Oww29XCbEUMABVD20w4gIpI';
-const SUMMARIES_URL = `https://spreadsheets.google.com/feeds/list/${SS_ID}/2/public/full?alt=json`;
-const TERMS_URL = `https://spreadsheets.google.com/feeds/list/${SS_ID}/3/public/full?alt=json`;
-const RXS = createRXObj(LANG_TERMS, SPECIAL_CASES);
 
 /* YYYY-MM-DD */
 function formatDate(d){
@@ -26,6 +22,17 @@ function formatDate(d){
     const below10 = n => n < 10 ? '0' + n : n;
     
     return `${year}-${below10(month)}-${below10(day)}`;
+}
+
+/* Array-of-Object, Object -> Array-of-Object
+    returns [...{ Term: RegExp }] */
+function createRXS(Terms, specialCases){
+    return Terms.map(t => {
+        const term = t.display;
+        const phrases = t.phrases;
+
+        return { [term]: createRegExp(phrases, specialCases) };
+    });
 }
 
 /* retrieves only the id & summary from GSheets response:
@@ -41,11 +48,35 @@ function createSummaries(json){
     });
 }
 
-//!!!
+// createSum... with Array.map vs createSum with extractPaths:
+// ~1ms : > 7ms
 function createSummaries2(json){
     const entries = json.feed.entry;
     // need to be able to assign custom keys
     return extractPaths(entries, ['gsx$id', '$t'], ['gsx$summary', '$t']);
+}
+
+/* from Terms sheet 
+    [...{ display: String, */
+function createInputs(json){
+    const entries = json.feed.entry;
+    const inputs = extractPaths(
+        entries,
+        ['display', 'phrases', 'fromLanguage', 'category'],
+        ['gsx$display', '$t'],
+        ['gsx$phrases', '$t'],
+        ['gsx$fromlanguage', '$t'],
+        ['gsx$category', '$t']
+    );
+    
+    return inputs.map(i => {
+        const splitPhrases = i.phrases.split(',');
+        const iFromLang = i.fromLanguage;
+        const fromLang = iFromLang === 'TRUE' ? true :
+                            iFromLang === 'FALSE' ? false : iFromLang;
+        
+        return Object.assign(i, { phrases: splitPhrases, fromLanguage: fromLang });
+    });
 }
 
 /* filters terms that have no references 
@@ -77,13 +108,23 @@ export const App = {
 
     // unfiltered GSheets response
     response: {},
-    set ajax(json){
-        return Object.assign(this.response, json);
+    set ajax(jsonArr){
+        return Object.assign(this.response, { 
+            Terms: jsonArr[1], Summaries: jsonArr[0] 
+        });
     },
     
     // filtered response data
-    get data(){
-        return createSummaries(this.response);
+    get Summaries(){
+        return createSummaries(this.response.Summaries);
+    },
+
+    get TermInputs(){
+        return createInputs(this.response.Terms);
+    },
+
+    get RXS(){
+        return createRXS(this.TermInputs, SPECIAL_CASES);
     },
     
     // DOM Objects
@@ -93,18 +134,19 @@ export const App = {
       
     // app data
     graphSize: getClientSize(document.documentElement.clientWidth),
-    allTermStrings: TERMS.slice(0),
-    
+    get Terms(){
+        return this.TermInputs.map(t => t.display);
+    },
     get postedDate(){
-        const date = this.response.feed.updated['$t'];
+        const date = this.response.Summaries.feed.updated['$t'];
         return date ? formatDate(new Date(date)) : formatDate(new Date());
     },
     get totalSummaries(){
-        return this.data.length;
+        return this.Summaries.length;
     },
     get presentTerms() {
-        return this.data.map(s => {
-            return presentTermsWithKey(s.summary, s.id, RXS);
+        return this.Summaries.map(s => {
+            return presentTermsWithKey(s.summary, s.id, this.RXS);
         }); 
     },
     get termsIndex(){
@@ -116,7 +158,7 @@ export const App = {
         });
     },
     get allWithNoRefs(){
-        return this.allTermStrings.reduce(filterWithNoRefs.bind(this.termsIndex), []); 
+        return this.Terms.reduce(filterWithNoRefs.bind(this.termsIndex), []); 
     },
     get graphNodes(){
         return createNodes(this.termsIndex);
@@ -133,16 +175,16 @@ export const App = {
 
 /* initialize app */
 (() => {
-    const initAndRender = json => {
-        App.ajax = json;
+    const initAndRender = jsonArr => {
+        App.ajax = jsonArr;
         App.graph.innerHTML = '';
-        
+
         render(resultsTable, ResultsTable(App.eachIndexLength, App.totalSummaries, App.postedDate));
         Graph(App.graphNodes, App.graphLinks, App.graph, App.graphSize);                         
         render(noRefsList, NoRefsList(App.allWithNoRefs));
     };
 
-    return getJSON(SUMMARIES_URL)
+    return getUrls(SUMMARIES_URL, TERMS_URL)
         .then(initAndRender)
         .catch(console.log);
 })();

@@ -6,8 +6,20 @@ async function getJSON(url){
     return json;
 }
 
+async function getUrls(...urls){
+    var promises = [];
+    
+    for(var i = 0; i < urls.length; i++){
+        promises.push(getJSON(urls[i]));
+    }
+    
+    let results = Promise.all(promises);
+    
+    return results;
+}
+
 
 export {
-    getJSON
+    getUrls
 };
 

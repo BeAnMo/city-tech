@@ -4,13 +4,13 @@ import { createMetonymRXs } from './regexes';
 
 /* Object -> Array-of-Object
    {...Term: [...String } -> [...{ Term: RegExp }] */
-export function createRXObj(termsObj, specialCases){
+function createRXObj(termsObj, specialCases){
     const keys = Object.keys(termsObj);
     
     return keys.map(k => {
         return {
             lang: k,
-            rx: createRX(termsObj[k], specialCases)
+            rx: createRegExp(termsObj[k], specialCases)
         };
     });
 }
@@ -20,7 +20,7 @@ export function createRXObj(termsObj, specialCases){
     builds a RegExp from an array of phrases to allow for multiple cases
     such as 'c#' or 'c sharp', 'javascript' or 'js'  
     specialcases = {...{ Term: RegExp} } */
-function createRX(phrases, specialCases){
+export function createRegExp(phrases, specialCases){
     return phrases[0] in specialCases ?
         specialCases[phrases[0]] :
         new RegExp(createMetonymRXs(phrases), 'i');    
