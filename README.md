@@ -39,3 +39,12 @@ in app
 ### notes
 - Array.sort speed varies from browser to browser
     - FF56 on W10 is slow but FF57 on Linux is faster than quickSort
+
+### todos
+- one big static network map depicting all results
+    - same idea as current, but maybe not with d3?
+- given each language its own network
+    - show links with other langs/libraries/etc...
+- allow user to pick 'dream stack':
+    - OS/DB/Lang/Library/Misc/other?
+    - if user picks Library or Misc associated with a Lang, automatically select that lang

@@ -1,83 +1,7 @@
 import * as d3 from 'd3';
-import { intersect } from '../data-processing/index';
 
 
-/* creates nodes for d3 graph */
-function createNodes(results){
-    const terms = Object.keys(results);
-  
-    return terms.map(term => {
-        return { term: term, size: results[term].length };
-    });
-}
-
-function createLinks(results){
-    const terms = Object.keys(results);
-    const len = terms.length;
-    // enforce this order
-    // 0 -> 9 -> a > z
-    // this sort work on FF, but not on chrome
-    // a - b doesn't work on either?
-    const byIncr = (a, b) => a > b;
-    let links = [];
-  
-    for(let i = 0; i < len; i++){
-        const source = terms[i];
-        const sourceIds = results[source].sort(byIncr);
-    
-        for(let j = 0; j < len; j++){
-            const target = terms[j];
-            const targetIds = results[target].sort(byIncr);
-            const shared = intersect(sourceIds, targetIds).length;
-    
-            // until "C" regexp is more accurate
-            const c_test = source === 'C *' || target === 'C *' ? false : true;
-    
-            if(target !== source && shared > 0 && c_test){
-                links.push({ target, source, shared });
-            }
-        }   
-    }
-  
-    return links;
-}
-
-//@START-TEST
-(() => {
-    const t0 = {
-        Scala: [ "d996ecb107d95f5e" ],
-        Python: ["1a8db8794d09a479", "22264e0253a9351b", "2973bbaa38b591bd", "2d865695d82ae324", "4ad674d054f4bbf1", "57b44a3efb8f140f", "76ad4673f873412e", "7aae7e244f359744", "91a7f3f9f500fd19", "9d937cc790aabc39"],
-        Java: ["04d4a774fe2bd693", "060564ecba2e71e2", "0696f3c1db4ea2b7"],
-        'Go *': ["04d4a774fe2bd693", "183f4803b7ba8f51", "2e05678631f51cf4"],
-        WhatLang: ["1a8db8794d09a479", "76ad4673f873412e", "7aae7e244f359744"]
-    };
-    
-    const tests = [
-        intersect(t0.Scala, t0.Python).length === 0,
-        intersect(t0.Java, t0['Go *']).length === 1,
-        intersect(t0.WhatLang, t0.Python).length === 3
-    ];
-    
-    let total = tests.length;
-    let passed = 0;
-    
-    console.log('---- MODULE TEST: Graph ----');
-    
-    tests.forEach((t, i) => {
-        console.assert(t, `tests[${i}]`);
-        
-        if(t){
-            passed += 1;
-        }
-    });
-    
-    console.log(`${passed} out of ${total} tests passed`);
-    console.log('----------------------------');
-})();
-//@END-TEST
-
-
-function Graph(nodes, links, graph, size){
+export function Graph(nodes, links, graph, size){
     const W = size;
     const H = W;
 
@@ -113,7 +37,7 @@ function Graph(nodes, links, graph, size){
             .on("drag", dragged.bind(simulation)));
             //.on("end", dragended.bind(simulation)));
             
-    node.append('title').text(d => d.term);
+    node.append('title').text(d => d[0]);
  
 
     function tickActions() {
@@ -131,7 +55,7 @@ function Graph(nodes, links, graph, size){
 
 
     const link_force =  d3.forceLink(links)
-        .id(function(d) { return d.term; });
+        .id(function(d) { return d[0]; });
 
 
     simulation.on('tick', tickActions);
@@ -214,9 +138,3 @@ function dragended(d){
     d.fy = null;
 }
 
-
-export {
-    createNodes,
-    createLinks,
-    Graph
-}

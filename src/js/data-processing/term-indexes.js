@@ -5,6 +5,17 @@ export function objectArrayToObject(objArr){
     return objArr.reduce(stringValuesToArray, {});
 }
 
+// marginally faster?
+export function objectArrayToObject2(objArr){
+    let result = {};
+
+    for(let i = 0; i < objArr.length; i++){
+        stringValuesToArray(result, objArr[i]);
+    }
+
+    return result;
+}
+
 /* Object, Object -> Object
     takes an object of  { String-X: String-Y } -> { String-X: [...String-Y] }
     and assigns it to the accumulator: {...}
