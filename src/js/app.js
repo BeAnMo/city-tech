@@ -136,10 +136,11 @@ export const App = {
     const initAndRender = json => {
         App.ajax = json;
         App.graph.innerHTML = '';
-        
+        console.time('render')
         render(resultsTable, ResultsTable(App.eachIndexLength, App.totalSummaries, App.postedDate));
         Graph(App.graphNodes, App.graphLinks, App.graph, App.graphSize);                         
         render(noRefsList, NoRefsList(App.allWithNoRefs));
+        console.timeEnd('render');// ~600-700ms
     };
 
     return getJSON(SUMMARIES_URL)
