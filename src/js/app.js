@@ -1,74 +1,27 @@
+import { Terms } from './Terms';
+import { Summaries } from './Summaries';
+import { TermsIndex } from './Terms-Index';
+import { GraphData } from './Graph-Data';
 import { 
-    createIndexes, 
-    extractPaths,
-    presentTermsWithKey,
-    createRXObj
-} from './data-processing/index';
-import { ResultsTable, 
+    ResultsTable, 
     NoRefsList, 
-    Graph, 
-    createNodes, 
-    createLinks 
+    Graph
 } from './components/index';
-import { getJSON } from './fetch-sheet';
-import { LANG_TERMS, SPECIAL_CASES, TERMS } from './inputs';
+import { getUrls } from './fetch-sheet';
+import { SUMMARIES_URL, TERMS_URL } from './inputs';
 
-const SS_ID = '1dtZyUAobcWC6yYbdsR1_Oww29XCbEUMABVD20w4gIpI';
-const SUMMARIES_URL = `https://spreadsheets.google.com/feeds/list/${SS_ID}/2/public/full?alt=json`;
-const TERMS_URL = `https://spreadsheets.google.com/feeds/list/${SS_ID}/3/public/full?alt=json`;
-const RXS = createRXObj(LANG_TERMS, SPECIAL_CASES);
-
-/* YYYY-MM-DD */
-function formatDate(d){
-    const year = d.getFullYear();
-    const month = d.getMonth() + 1;
-    const day = d.getDate();
-    const below10 = n => n < 10 ? '0' + n : n;
-    
-    return `${year}-${below10(month)}-${below10(day)}`;
-}
-
-/* retrieves only the id & summary from GSheets response:
-   { id: String, summary: String } */
-function createSummaries(json){
-    const entries = json.feed.entry;
-
-    return entries.map(e => {
-        return {
-            id: e['gsx$id']['$t'],
-            summary: e['gsx$summary']['$t']
-        };
-    });
-}
-
-//!!!
-function createSummaries2(json){
-    const entries = json.feed.entry;
-    // need to be able to assign custom keys
-    return extractPaths(entries, ['gsx$id', '$t'], ['gsx$summary', '$t']);
-}
-
-/* filters terms that have no references 
-   needed in main() */
-function filterWithNoRefs(acc, term){
-    // 'this is 'results' Object in main
-    return term in this ? acc : acc.concat(term);
-}
-
-/* gets the size of the client's browser window */
-function getClientSize(docWidth){
-    if(docWidth < 730){
-        return 300;
-    } else if(730 < docWidth < 1000){
-        return 450;
-    } else {
-        return 600;
-    }
-}
 
 /* main rendering function */
-function render(target, html){
+function render1(target, html){
     return target.innerHTML = html;
+}
+
+function render(target, html){
+    if(typeof(html) === 'string'){
+        return target.innerHTML = html;
+    } else {
+        return target.appendChild(html);
+    }
 }
 
 
@@ -77,73 +30,122 @@ export const App = {
 
     // unfiltered GSheets response
     response: {},
-    set ajax(json){
-        return Object.assign(this.response, json);
+    set ajax(jsonArr){
+        return Object.assign(this.response, { 
+            Terms: jsonArr[1], Summaries: jsonArr[0] 
+        });
     },
-    
-    // filtered response data
-    get data(){
-        return createSummaries(this.response);
-    },
-    
+
     // DOM Objects
     table: document.getElementById('resultsTable'),
     graph: document.getElementById('resultsGraph'),
     noRefsList: document.getElementById('noRefsList'),
       
-    // app data
-    graphSize: getClientSize(document.documentElement.clientWidth),
-    allTermStrings: TERMS.slice(0),
-    
-    get postedDate(){
-        const date = this.response.feed.updated['$t'];
-        return date ? formatDate(new Date(date)) : formatDate(new Date());
-    },
-    get totalSummaries(){
-        return this.data.length;
-    },
-    get presentTerms() {
-        return this.data.map(s => {
-            return presentTermsWithKey(s.summary, s.id, RXS);
-        }); 
-    },
-    get termsIndex(){
-        return createIndexes(this.presentTerms);
-    },
-    get eachIndexLength(){
-        return Object.keys(this.termsIndex).map(term => {
-            return [term, this.termsIndex[term].length];
-        });
-    },
-    get allWithNoRefs(){
-        return this.allTermStrings.reduce(filterWithNoRefs.bind(this.termsIndex), []); 
-    },
-    get graphNodes(){
-        return createNodes(this.termsIndex);
-    },
-    get graphLinks(){
-        return createLinks(this.termsIndex);
-    },
-
     // for REPL debugging
     debug: {
+        // not working with differenct webpack configs :(
     }
 };
 
-
 /* initialize app */
 (() => {
-    const initAndRender = json => {
-        App.ajax = json;
+    /* Object extensions
+             Terms -------> Index
+        App -^-> Summaries -^-> Graph
+    */
+    const initAndRender = jsonArr => {
+        console.time('initAndRender');
+        App.ajax = jsonArr;
+        App.table.innerHTML = '';
         App.graph.innerHTML = '';
-        console.time('render')
-        render(resultsTable, ResultsTable(App.eachIndexLength, App.totalSummaries, App.postedDate));
-        Graph(App.graphNodes, App.graphLinks, App.graph, App.graphSize);                         
-        render(noRefsList, NoRefsList(App.allWithNoRefs));
-        console.timeEnd('render');// ~600-700ms
+
+        const response = App.response;
+        /* extensions
+        - assigning a whole object, like Object.assign(TermsIndex, SUMMARIES, TERMS)
+          is slow, so only assign the data that is needed
+          doing this dropped the time for 'extensions' from ~550ms to ~40ms
+          the GRAPH extensions are particularly expensive
+
+          how to offload the large structures on to a worker?
+          - handle all ajax & big calculation from a worker
+
+          there doesn't seem to be a consistent time difference between:
+          - Object.assign(a, b)
+          - {...a, [prop]: b[prop]}
+          - { [prop1]: a.prop1, [prop2]: b.prop2 }
+        */
+        console.time('extensions');
+        
+        console.time('TERMS');
+        const TERMS = Object.assign(Terms, { response });
+        console.timeEnd('TERMS');
+
+        console.time('SUMMARIES');
+        const SUMMARIES = Object.assign(Summaries, { response });
+        console.timeEnd('SUMMARIES');
+        
+        console.time('TERMS_INDEX');
+        const TERMS_INDEX = Object.assign(TermsIndex, { 
+            Summaries: SUMMARIES.Summaries,
+            RXS: TERMS.RXS 
+        });
+        let indexLength = TERMS_INDEX.eachIndexLength;
+        let termsindex = TERMS_INDEX.termsIndex;
+        console.timeEnd('TERMS_INDEX');
+
+        console.time('GRAPH');
+        const GRAPH = Object.assign(GraphData, { // this is the big time sink
+            response,
+            // what to do with these 2?
+            //termsIndex: TERMS_INDEX.termsIndex,
+            termsIndex: termsindex,
+            //graphNodes: TERMS_INDEX.eachIndexLength
+            graphNodes: indexLength
+        });
+        console.timeEnd('GRAPH');
+        
+        console.timeEnd('extensions');
+
+        // 500ms or 2.5ms w/o TERMS_INDEX.eachIndexLength as getter
+        // ~30-40ms w/ TERMS_INDEX.eachIndexLength calculated w/ for loop
+        console.time('render ResultsTable'); 
+        render(
+            App.table, 
+            ResultsTable(
+                // 480ms!!!!!, 2.5ms when eachIndexLength is a prop, not a getter!!
+                //TERMS_INDEX.eachIndexLength,
+                indexLength,
+                SUMMARIES.totalSummaries, 
+                GRAPH.postedDate
+            )
+        );
+        console.timeEnd('render ResultsTable');
+
+        console.time('render Graph'); // 25ms
+        Graph(
+            GRAPH.graphNodes, 
+            GRAPH.graphLinks, 
+            App.graph, 
+            GRAPH.graphSize
+        );          
+        console.timeEnd('render Graph');
+        
+        console.time('render NoRefsList'); // 26ms, ditch use of innerHTML?
+        render(
+            App.noRefsList, 
+            NoRefsList(
+                //TERMS.allWithNoRefs(TERMS_INDEX.termsIndex)
+                TERMS.allWithNoRefs(termsindex)
+            )
+        );
+        console.timeEnd('render NoRefsList');
+
+        // by declaring TERMS_INDEX.termsIndex & .eachIndexLength as variables
+        // 60-80ms is cut off of render time
+        console.timeEnd('initAndRender'); // ~100-120ms
     };
 
-    return getJSON(SUMMARIES_URL)
+    return getUrls(SUMMARIES_URL, TERMS_URL)
         .then(initAndRender)
         .catch(console.log);
 })();
