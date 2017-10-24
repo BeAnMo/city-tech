@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 
 
-function Graph(nodes, links, graph, size){
+export function Graph(nodes, links, graph, size){
     const W = size;
     const H = W;
 
@@ -37,7 +37,7 @@ function Graph(nodes, links, graph, size){
             .on("drag", dragged.bind(simulation)));
             //.on("end", dragended.bind(simulation)));
             
-    node.append('title').text(d => d.term);
+    node.append('title').text(d => d[0]);
  
 
     function tickActions() {
@@ -55,7 +55,7 @@ function Graph(nodes, links, graph, size){
 
 
     const link_force =  d3.forceLink(links)
-        .id(function(d) { return d.term; });
+        .id(function(d) { return d[0]; });
 
 
     simulation.on('tick', tickActions);
@@ -138,9 +138,3 @@ function dragended(d){
     d.fy = null;
 }
 
-
-export {
-    createNodes,
-    createLinks,
-    Graph
-}
