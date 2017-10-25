@@ -76,7 +76,6 @@ function createLinks(results){
         
             // until "C" regexp is more accurate
             const c_test = first === 'C *' || target === 'C *' ? false : true;
-            
             if(target !== first && shared > 0 && c_test){
                 links.push({ source: first, target, shared });
             }
