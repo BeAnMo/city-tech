@@ -93,6 +93,12 @@ div {
 	margin: 5rem;
 }
 
+#resultsGraph {
+  margin: 1rem 0 1rem 0;
+  border: 1px solid lightgray;
+}
+
+
 div.popup {
     margin: 0;
     position: absolute;

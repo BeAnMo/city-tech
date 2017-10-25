@@ -33,6 +33,10 @@ module.exports = {
                     'style-loader',
                     'css-loader'
                 ]
+            },
+            {
+                test: /.*\.png$/i,
+                use: ['file-loader']
             }
         ]
     }

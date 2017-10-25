@@ -8,8 +8,11 @@ from json:
 - Term: String
 - ID: String
 - Summaries:
+
     [...{ id: ID, summary: String }]
+
 - Term-Inputs:
+
     [...{ display: Term, 
         category: String, 
         phrases: [...String], 
@@ -19,20 +22,35 @@ in app
 - Total: Number (# of ID for a given Term)
 - Neighbors: Number (# of intersecting ID from 2 Terms)
 - Terms (from Term-Inputs.display): 
+
     [...Term]
+
 - Regexes (rxs created with Term-Inputs.phrases):
+
     [...{ lang: Term, rx: RegExp }]
+
 - Special-Cases (key from first element of Term-Inputs.phrases):
+
     {...Term: RegExp }
+
 - Index:
+
     {...Term: [...ID] }
+
 - Each-Index-Length:
+
     {...Term: Total }
+
 - NoRefs (all Term not in Index): 
+
     [...Term]
+
 - GraphNodes (same info as Each-Index-Length):
+
     [...{ term: Term, size: Total }]
+
 - GraphLinks (shared is intersection of target & source):
+
     [...{ target: Term, source: Term, shared: Neighbors }]
 
 

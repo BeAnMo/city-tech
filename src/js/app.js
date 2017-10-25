@@ -100,7 +100,7 @@ export const App = {
             //termsIndex: TERMS_INDEX.termsIndex,
             termsIndex: termsindex,
             //graphNodes: TERMS_INDEX.eachIndexLength
-            graphNodes: indexLength
+            //graphNodes: indexLength
         });
         console.timeEnd('GRAPH');
         
