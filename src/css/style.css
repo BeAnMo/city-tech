@@ -93,6 +93,18 @@ div {
 	margin: 5rem;
 }
 
+#resultsGraph {
+  margin: 1rem 0 1rem 0;
+  width: 90vw;
+  height: 80vh;
+  border: 1px solid lightgray;
+}
+
+#resultsTable {
+  margin-bottom: 1rem;
+}
+
+
 div.popup {
     margin: 0;
     position: absolute;

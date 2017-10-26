@@ -14,14 +14,16 @@ SPECIAL_CASES are hard coded for now
 */
 export const Terms = { 
     get TermInputs(){
+        // {...Term: { phrases: [...String], fromLanguage: String|Boolean, category: String }}
         return createInputs(this.response.Terms);
     },
 
     get RXS(){
-        return createRXS(this.TermInputs, SPECIAL_CASES);
+        return createRXS(this.Terms, this.TermInputs, SPECIAL_CASES);
     },
     get Terms(){
-        return this.TermInputs.map(t => t.display);
+        return Object.keys(this.TermInputs);
+        //return this.TermInputs.map(t => t.display);
     },
     allWithNoRefs(termsIndex){
         return this.Terms.reduce(filterWithNoRefs.bind(termsIndex), []); 
@@ -41,24 +43,40 @@ function createInputs(json){
         ['gsx$category', '$t']
     );
     
-    return inputs.map(i => {
+    /*return inputs.map(i => {
         const splitPhrases = i.phrases.split(',');
         const iFromLang = i.fromLanguage;
         const fromLang = iFromLang === 'TRUE' ? true :
                             iFromLang === 'FALSE' ? false : iFromLang;
         
         return Object.assign(i, { phrases: splitPhrases, fromLanguage: fromLang });
-    });
+    });*/
+
+    return inputs.reduce((acc, i) => {
+        const splitPhrases = i.phrases.split(',');
+        const iFromLang = i.fromLanguage;
+        const fromLang = iFromLang === 'TRUE' ? true :
+                            iFromLang === 'FALSE' ? false : iFromLang;
+        const resultObj = {
+            [i.display]: {
+                phrases: splitPhrases,
+                fromLanguage: fromLang,
+                category: i.category
+            }
+        };
+        return Object.assign(acc, resultObj);
+    }, {});
 }
 
 /* Array-of-Object, Object -> Array-of-Object
     returns [...{ Term: RegExp }] */
-function createRXS(Terms, specialCases){
-    return Terms.map(t => {
-        const term = t.display;
-        const phrases = t.phrases;
+function createRXS(terms, termInputs, specialCases){
+    return terms.map(t => {
+        const term = t;
+        const phrases = termInputs[t].phrases;
 
-        return { [term]: createRegExp(phrases, specialCases) };
+        //return { [term]: createRegExp(phrases, specialCases) };
+        return { lang: term, rx: createRegExp(phrases, specialCases) };
     });
 }
 

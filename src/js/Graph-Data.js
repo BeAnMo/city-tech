@@ -18,12 +18,13 @@ export const GraphData = {
 
 
 // reused TERMS_INDEX.eachIndexLength instead
-/* creates nodes for d3 graph */
+/* creates nodes for graph */
 function createNodes(results){
     const terms = Object.keys(results);
   
     return terms.map(term => {
-        return { term: term, size: results[term].length };
+        //return { term: term, size: results[term].length }; for d3
+        return { id: term, label: term, value: results[term].length };
     });
 }
 
@@ -76,9 +77,9 @@ function createLinks(results){
         
             // until "C" regexp is more accurate
             const c_test = first === 'C *' || target === 'C *' ? false : true;
-            
             if(target !== first && shared > 0 && c_test){
-                links.push({ source: first, target, shared });
+                //links.push({ source: first, target, shared });
+                links.push({ from: first, to: target, value: shared });
             }
         }
 
@@ -124,10 +125,12 @@ function createLinks(results){
 
 /* gets the size of the client's browser window */
 function getClientSize(docWidth){
-    if(docWidth < 730){
+    if(docWidth < 500){
         return 300;
+    } else if(docWidth < 600){ 
+        return 400;
     } else if(730 < docWidth < 1000){
-        return 450;
+        return 500;
     } else {
         return 600;
     }

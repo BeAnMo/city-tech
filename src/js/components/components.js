@@ -20,7 +20,9 @@ function td(text){
 
 function ResultsTable(results, totalNum, date){
     // timing: sorted & sorted.reduce add up to be about 1.4ms
-    const sorted = results.slice(0).sort((a, b) => b[1] - a[1]);
+    //const sorted = results.slice(0).sort((a, b) => b[1] - a[1]);
+    // adjust for vis.js
+    const sorted = results.slice(0).sort((a,b) => b.value - a.value);
     const div = document.createElement('div');
     const table = document.createElement('table');
     
@@ -45,8 +47,8 @@ function ResultsTable(results, totalNum, date){
     const dataRow = sorted.forEach((result, i) => {
         const row = tr();
         row.appendChild(th({scope: 'row', text: `${i+1}`}));
-        row.appendChild(td(`${result[0]}`));
-        row.appendChild(td(`${result[1]}`));
+        row.appendChild(td(`${result.label}`));
+        row.appendChild(td(`${result.value}`));
 
         table.appendChild(row);
     });

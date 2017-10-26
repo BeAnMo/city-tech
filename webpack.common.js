@@ -6,7 +6,7 @@ const path = require('path'),
 module.exports = {
     entry: {
         main: './src/js/app.js',
-        vendor: [ 'd3' ]
+        vendor: [ 'vis' ]
     },
     
     plugins: [
@@ -34,6 +34,10 @@ module.exports = {
                     'css-loader'
                 ]
             },
+            {
+                test: /.*\.png$/i,
+                use: ['file-loader']
+            }
         ]
     }
 }

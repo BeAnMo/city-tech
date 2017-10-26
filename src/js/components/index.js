@@ -1,12 +1,11 @@
 import { ResultsTable, NoRefsList } from './components';
-import { Graph, createNodes, createLinks } from './graph';
+//import { Graph } from './graph';
+import { Graph } from './all-graph';
 
 /* HTML components */
 
 export {
     ResultsTable,
     NoRefsList,
-    Graph,
-    createLinks,
-    createNodes
+    Graph
 }

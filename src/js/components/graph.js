@@ -1,4 +1,4 @@
-import * as d3 from 'd3';
+//import * as d3 from 'd3';
 
 
 export function Graph(nodes, links, graph, size){
@@ -69,7 +69,7 @@ export function Graph(nodes, links, graph, size){
         .attr("stroke-width", 3)
         .style('stroke', linkColor);
         
-    link.append('title').text(d => `${d.source.term} & ${d.target.term} : ${d.shared}`);
+    link.append('title').text(d => `${d.source[0]} & ${d.target[0]} : ${d.shared}`);
         
     //Popup(graph, popup, node, d => `<p>${d.term}</p>`);
     //Popup(graph, popup, link, d => `<p>${d.source.term} & ${d.target.term} : <strong>${d.shared}</strong></p>`);
