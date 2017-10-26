@@ -30,7 +30,7 @@ export function createRegExp(phrases, specialCases){
 /* String, Array-of-Object -> Array-of-String 
    rxs = [...{ lang: Term, rx: RegExp}] */
 function presentTerms(txt, rxs){
-    return RXS.reduce((acc, term) => {
+    return rxs.reduce((acc, term) => {
         return term.rx.test(txt) ?
             acc.concat(term.lang) :
             acc;

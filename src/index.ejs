@@ -31,14 +31,15 @@
       <h3>NASHVILLE</h3>
     </header>
     
+    <section id="resultsGraph">
+        <div class="loading">Loading graph...</div>
+    </section>
+
     <main>
       
     <section>
         <section id="resultsTable">
             <div class="loading">Loading table...</div>
-        </section>
-        <section id="resultsGraph">
-            <div class="loading">Loading graph...</div>
         </section>
     </section>
       
@@ -51,7 +52,7 @@
         
         <h4>Careful now...</h4>
           
-          <p>"*" means questionable results. All terms with filtered out with regular expressions. Unfortunately, regexs don't allow for context, so non-tech specific words like "go" can yield a lot of false positives. At the moment, I would completely discount "C."</p>
+          <p>"*" means questionable results. All terms with filtered out with regular expressions. Unfortunately, regexs don't allow for context, so non-tech specific words like "go" or letters like "c" can yield a lot of false positives.</p>
           
           <p>The following terms had no related job postings:</p>
           <div id="noRefsList"></div>

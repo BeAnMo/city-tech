@@ -7,10 +7,10 @@ export const GraphData = {
         const date = this.response.Summaries.feed.updated['$t'];
         return date ? formatDate(new Date(date)) : formatDate(new Date());
     },
-    //graphNodes: false,
-    get graphNodes(){
+    graphNodes: false,
+    /*get graphNodes(){
         return createNodes(this.termsIndex);
-    },
+    },*/
     get graphLinks(){
         return createLinks(this.termsIndex);
     },
@@ -18,12 +18,12 @@ export const GraphData = {
 
 
 // reused TERMS_INDEX.eachIndexLength instead
-/* creates nodes for d3 graph */
+/* creates nodes for graph */
 function createNodes(results){
     const terms = Object.keys(results);
   
     return terms.map(term => {
-        //return { term: term, size: results[term].length };
+        //return { term: term, size: results[term].length }; for d3
         return { id: term, label: term, value: results[term].length };
     });
 }

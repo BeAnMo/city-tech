@@ -87,7 +87,8 @@ export const App = {
         console.time('TERMS_INDEX');
         const TERMS_INDEX = Object.assign(TermsIndex, { 
             Summaries: SUMMARIES.Summaries,
-            RXS: TERMS.RXS 
+            RXS: TERMS.RXS,
+            inputs: TERMS.TermInputs
         });
         let indexLength = TERMS_INDEX.eachIndexLength;
         let termsindex = TERMS_INDEX.termsIndex;
@@ -99,8 +100,6 @@ export const App = {
             // what to do with these 2?
             //termsIndex: TERMS_INDEX.termsIndex,
             termsIndex: termsindex,
-            //graphNodes: TERMS_INDEX.eachIndexLength
-            //graphNodes: indexLength
         });
         console.timeEnd('GRAPH');
         
@@ -123,7 +122,8 @@ export const App = {
 
         console.time('render Graph'); // 25ms
         Graph(
-            GRAPH.graphNodes, 
+            //GRAPH.graphNodes,
+            indexLength, 
             GRAPH.graphLinks, 
             App.graph, 
             GRAPH.graphSize

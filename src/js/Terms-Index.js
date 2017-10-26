@@ -19,7 +19,7 @@ export const TermsIndex = {
         return createIndexes(this.presentTerms);
     },
     get eachIndexLength(){ // this takes almost 500ms to process!!!!!
-        return getLengths(this.termsIndex);
+        return getLengths(this.termsIndex, this.inputs);
     }
     /*eachIndexLength: false,
     setIndexLength(){ // .reduce version ~480-500ms, for loop < 40ms  
@@ -42,11 +42,19 @@ function getLengths1(index){
 
 // faster than for loop?
 // about the same
-function getLengths(index){
+function getLengths(index, inputs){
     let result = [];
 
-    for(let key in index){
-        result.push([key, index[key].length]);
+    for(let term in index){
+        //result.push([key, index[key].length]);
+        
+        // for use with vis
+        result.push({ 
+            id: term, 
+            label: term, 
+            value: index[term].length,
+            group: inputs[term].fromLanguage 
+        });
     }
 
     return result;
