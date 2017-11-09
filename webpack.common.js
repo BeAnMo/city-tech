@@ -37,6 +37,13 @@ module.exports = {
             {
                 test: /.*\.png$/i,
                 use: ['file-loader']
+            },
+            { // for web workers
+                test: /\.worker\.js$/,
+                use: { 
+                    loader: 'worker-loader', 
+                    options: { name: 'web-worker.js' }
+                }
             }
         ]
     }

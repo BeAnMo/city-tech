@@ -141,7 +141,7 @@ every structure uses Terms
 
 ### new app flow:
 1. ajax call to sheets
-2. Summaires are created: [...{ id: String, summary: String}]
+2. Summaries are created: [...{ id: String, summary: String}]
 3. Inputs are created:
     - [...Term] (all other arrays with correspond with this)
     - [...{ phrases: [...String], category: String, fromLanguage: String }]

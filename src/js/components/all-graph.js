@@ -28,15 +28,6 @@ const options = {
             max: 150
         }
     },
-    /*physics: {
-        enabled: false,
-        barnesHut: {
-            gravitationalConstant: -20000,
-            centralGravity: 0,
-            avoidOverlap: 1,
-            springLength: 300
-        }
-    }*/
     physics: {
         //enabled: false,
         forceAtlas2Based: {
@@ -60,9 +51,6 @@ export function Graph(nodes, links, graph, size){
         nodes: _nodes,
         edges: edges
     };
-    
-    //graph.style.width = `${size}px`;
-    //graph.style.height = `${size}px`;
 
     return new Network(graph, data, options);
 }

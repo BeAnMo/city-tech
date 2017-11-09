@@ -1,4 +1,4 @@
-import { createIndexes, presentTermsWithKey } from './data-processing/index';
+import { createIndexes, presentTermsWithKey } from '../data-processing/index';
 // termsIndex & eachIndexLength are the major time sinks
 // both are ~30ms to calculate
 /* to be extended by App

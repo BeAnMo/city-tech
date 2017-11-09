@@ -1,5 +1,5 @@
-import { extractPaths, createRegExp } from './data-processing/index';
-import { SPECIAL_CASES } from './inputs';
+import { extractPaths, createRegExp } from '../data-processing/index';
+import { SPECIAL_CASES } from '../inputs';
 
 /* To be extended by the App 
 Terms are:
