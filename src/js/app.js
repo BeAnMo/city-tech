@@ -11,11 +11,6 @@ import { getUrls } from './fetch-sheet';
 import { SUMMARIES_URL, TERMS_URL } from './inputs';
 
 
-/* main rendering function */
-function render1(target, html){
-    return target.innerHTML = html;
-}
-
 function render(target, html){
     if(typeof(html) === 'string'){
         return target.innerHTML = html;
@@ -76,13 +71,8 @@ export const App = {
         */
         console.time('extensions');
         
-        console.time('TERMS');
         const TERMS = Object.assign(Terms, { response });
-        console.timeEnd('TERMS');
-
-        console.time('SUMMARIES');
         const SUMMARIES = Object.assign(Summaries, { response });
-        console.timeEnd('SUMMARIES');
         
         console.time('TERMS_INDEX');
         const TERMS_INDEX = Object.assign(TermsIndex, { 
@@ -105,14 +95,10 @@ export const App = {
         
         console.timeEnd('extensions');
 
-        // 500ms or 2.5ms w/o TERMS_INDEX.eachIndexLength as getter
-        // ~30-40ms w/ TERMS_INDEX.eachIndexLength calculated w/ for loop
         console.time('render ResultsTable'); 
         render(
             App.table, 
             ResultsTable(
-                // 480ms!!!!!, 2.5ms when eachIndexLength is a prop, not a getter!!
-                //TERMS_INDEX.eachIndexLength,
                 indexLength,
                 SUMMARIES.totalSummaries, 
                 GRAPH.postedDate
@@ -120,9 +106,8 @@ export const App = {
         );
         console.timeEnd('render ResultsTable');
 
-        console.time('render Graph'); // 25ms
+        console.time('render Graph');
         Graph(
-            //GRAPH.graphNodes,
             indexLength, 
             GRAPH.graphLinks, 
             App.graph, 
@@ -130,19 +115,16 @@ export const App = {
         );          
         console.timeEnd('render Graph');
         
-        console.time('render NoRefsList'); // 26ms, ditch use of innerHTML?
+        console.time('render NoRefsList');
         render(
             App.noRefsList, 
             NoRefsList(
-                //TERMS.allWithNoRefs(TERMS_INDEX.termsIndex)
                 TERMS.allWithNoRefs(termsindex)
             )
         );
         console.timeEnd('render NoRefsList');
 
-        // by declaring TERMS_INDEX.termsIndex & .eachIndexLength as variables
-        // 60-80ms is cut off of render time
-        console.timeEnd('initAndRender'); // ~100-120ms
+        console.timeEnd('initAndRender');
     };
 
     return getUrls(SUMMARIES_URL, TERMS_URL)

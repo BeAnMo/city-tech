@@ -28,43 +28,12 @@ function createNodes(results){
     });
 }
 
-// 22ms
-function createLinks1(results){
-    const terms = Object.keys(results);
-    const len = terms.length;
-    // enforce this order
-    // 0 -> 9 -> a > z
-    // this sort work on FF, but not on chrome
-    // a - b doesn't work on either?
-    const byIncr = (a, b) => a > b;
-    let links = [];
-    console.time('createLinks');
-    for(let i = 0; i < len; i++){
-        const source = terms[i];
-        const sourceIds = results[source].sort(byIncr);
-    
-        for(let j = 0; j < len; j++){
-            const target = terms[j];
-            const targetIds = results[target].sort(byIncr);
-            const shared = intersect(sourceIds, targetIds).length;
-    
-            // until "C" regexp is more accurate
-            const c_test = source === 'C *' || target === 'C *' ? false : true;
-    
-            if(target !== source && shared > 0 && c_test){
-                links.push({ target, source, shared });
-            }
-        }   
-    }
-    return links;
-}
-
 // 11ms or roughly half the time of createLinks1
 function createLinks(results){
     const byIncr = (a, b) => a > b;
     let terms = Object.keys(results);
     let links = [];
-    console.time('createLinks')
+    
     while(terms.length > 0){
         const first = terms[0];
         const rest = terms.slice(1);
@@ -85,7 +54,7 @@ function createLinks(results){
 
         terms = terms.slice(1);
     }    
-    console.timeEnd('createLinks')
+    
     return links;
 }
 

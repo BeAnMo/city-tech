@@ -14,7 +14,6 @@ SPECIAL_CASES are hard coded for now
 */
 export const Terms = { 
     get TermInputs(){
-        // {...Term: { phrases: [...String], fromLanguage: String|Boolean, category: String }}
         return createInputs(this.response.Terms);
     },
 
@@ -23,7 +22,6 @@ export const Terms = {
     },
     get Terms(){
         return Object.keys(this.TermInputs);
-        //return this.TermInputs.map(t => t.display);
     },
     allWithNoRefs(termsIndex){
         return this.Terms.reduce(filterWithNoRefs.bind(termsIndex), []); 
@@ -42,15 +40,6 @@ function createInputs(json){
         ['gsx$fromlanguage', '$t'],
         ['gsx$category', '$t']
     );
-    
-    /*return inputs.map(i => {
-        const splitPhrases = i.phrases.split(',');
-        const iFromLang = i.fromLanguage;
-        const fromLang = iFromLang === 'TRUE' ? true :
-                            iFromLang === 'FALSE' ? false : iFromLang;
-        
-        return Object.assign(i, { phrases: splitPhrases, fromLanguage: fromLang });
-    });*/
 
     return inputs.reduce((acc, i) => {
         const splitPhrases = i.phrases.split(',');
@@ -75,7 +64,6 @@ function createRXS(terms, termInputs, specialCases){
         const term = t;
         const phrases = termInputs[t].phrases;
 
-        //return { [term]: createRegExp(phrases, specialCases) };
         return { lang: term, rx: createRegExp(phrases, specialCases) };
     });
 }

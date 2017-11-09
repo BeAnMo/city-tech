@@ -27,28 +27,11 @@ export const TermsIndex = {
     }*/
 };
 
-// ~30-40ms
-function getLengths1(index){
-    const keys = Object.keys(index);
-    let result = [];
 
-    for(let i = 0; i < keys.length; i++){
-        const term = keys[i];
-        result.push([term, index[term].length]);
-    }
-
-    return result;
-}
-
-// faster than for loop?
-// about the same
 function getLengths(index, inputs){
     let result = [];
 
     for(let term in index){
-        //result.push([key, index[key].length]);
-        
-        // for use with vis
         result.push({ 
             id: term, 
             label: term, 
@@ -59,8 +42,3 @@ function getLengths(index, inputs){
 
     return result;
 }
-
-/* old version, toooooo slow
-return this.eachIndexLength = Object.keys(this.termsIndex).map(term => {
-    return [term, this.termsIndex[term].length];
-});*/

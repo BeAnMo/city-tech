@@ -27,11 +27,3 @@ function createSummaries(json){
         };
     });
 }
-
-// createSum... with Array.map vs createSum with extractPaths:
-// ~1ms : > 7ms
-function createSummaries2(json){
-    const entries = json.feed.entry;
-    // need to be able to assign custom keys
-    return extractPaths(entries, ['gsx$id', '$t'], ['gsx$summary', '$t']);
-}
