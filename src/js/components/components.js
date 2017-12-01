@@ -37,7 +37,7 @@ function ResultsTable(results, totalNum, date){
     );
     const rowTitles = tr();
     rowTitles.appendChild(th({text: 'Rank'}));
-    rowTitles.appendChild(th({text: 'Language'}));
+    rowTitles.appendChild(th({text: 'Tech'}));
     rowTitles.appendChild(th({text: 'References'}));
     
     table.appendChild(numHeading)

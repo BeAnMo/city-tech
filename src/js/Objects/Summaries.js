@@ -1,4 +1,4 @@
-import { extractPaths } from './data-processing/index';
+import { extractPaths } from '../data-processing/index';
 
 /* to be extended by App
 Summaries:

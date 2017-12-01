@@ -1,4 +1,4 @@
-import { intersect } from './data-processing/index';
+import { intersect } from '../data-processing/index';
 
 export const GraphData = {
     graphSize: getClientSize(document.documentElement.clientWidth),

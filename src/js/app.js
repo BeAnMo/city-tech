@@ -1,14 +1,16 @@
-import { Terms } from './Terms';
-import { Summaries } from './Summaries';
-import { TermsIndex } from './Terms-Index';
-import { GraphData } from './Graph-Data';
+import { getUrls } from './fetch-sheet';
+import { SUMMARIES_URL, TERMS_URL } from './inputs';
+import {
+    Terms,
+    Summaries,
+    TermsIndex,
+    GraphData
+} from './Objects';
 import { 
     ResultsTable, 
     NoRefsList, 
     Graph
 } from './components/index';
-import { getUrls } from './fetch-sheet';
-import { SUMMARIES_URL, TERMS_URL } from './inputs';
 
 
 function render(target, html){
@@ -68,13 +70,9 @@ export const App = {
           - Object.assign(a, b)
           - {...a, [prop]: b[prop]}
           - { [prop1]: a.prop1, [prop2]: b.prop2 }
-        */
-        console.time('extensions');
-        
+        */      
         const TERMS = Object.assign(Terms, { response });
         const SUMMARIES = Object.assign(Summaries, { response });
-        
-        console.time('TERMS_INDEX');
         const TERMS_INDEX = Object.assign(TermsIndex, { 
             Summaries: SUMMARIES.Summaries,
             RXS: TERMS.RXS,
@@ -82,20 +80,14 @@ export const App = {
         });
         let indexLength = TERMS_INDEX.eachIndexLength;
         let termsindex = TERMS_INDEX.termsIndex;
-        console.timeEnd('TERMS_INDEX');
 
-        console.time('GRAPH');
         const GRAPH = Object.assign(GraphData, { // this is the big time sink
             response,
             // what to do with these 2?
             //termsIndex: TERMS_INDEX.termsIndex,
             termsIndex: termsindex,
         });
-        console.timeEnd('GRAPH');
-        
-        console.timeEnd('extensions');
 
-        console.time('render ResultsTable'); 
         render(
             App.table, 
             ResultsTable(
@@ -104,25 +96,20 @@ export const App = {
                 GRAPH.postedDate
             )
         );
-        console.timeEnd('render ResultsTable');
 
-        console.time('render Graph');
         Graph(
             indexLength, 
             GRAPH.graphLinks, 
             App.graph, 
             GRAPH.graphSize
         );          
-        console.timeEnd('render Graph');
-        
-        console.time('render NoRefsList');
+
         render(
             App.noRefsList, 
             NoRefsList(
                 TERMS.allWithNoRefs(termsindex)
             )
         );
-        console.timeEnd('render NoRefsList');
 
         console.timeEnd('initAndRender');
     };
