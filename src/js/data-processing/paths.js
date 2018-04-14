@@ -46,7 +46,7 @@ function recurPath(obj, arr, lastKey=''){
         return recurPath(obj[arr[0]], arr.slice(1), arr[0]);
     }
 }
-
+/*
 //@START-TEST for paths
 (() => {
     const t0 = [
@@ -102,3 +102,4 @@ function recurPath(obj, arr, lastKey=''){
     console.assert(ex3[0].g === 'weef', 'extractPaths: !== wiif');
     console.assert(ex3[2].g === 'wyyf', 'extractPaths: !== wyyf');
 })();//@END-TEST
+*/

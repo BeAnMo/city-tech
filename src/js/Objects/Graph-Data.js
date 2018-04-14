@@ -57,7 +57,7 @@ function createLinks(results){
     
     return links;
 }
-
+/*
 //@START-TEST
 (() => {
     const t0 = {
@@ -91,7 +91,7 @@ function createLinks(results){
     console.log('----------------------------');
 })();
 //@END-TEST
-
+*/
 /* gets the size of the client's browser window */
 function getClientSize(docWidth){
     if(docWidth < 500){

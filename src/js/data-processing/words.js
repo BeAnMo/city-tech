@@ -50,7 +50,7 @@ export function presentTermsWithKey(txt, id, rxs){
     }, {});
 }
 
-
+/*
 // constants are just for testing now   
 const LANG_TERMS = {
     Awk:            ['awk'],
@@ -87,7 +87,7 @@ const SPECIAL_CASES = {
     'c': /(^|[^A-Za-z])c($|[^A-Za-z\+])/i
 };
 
-/* array of term regexps */
+// array of term regexps
 const RXS = createRXObj(LANG_TERMS, SPECIAL_CASES);
 
 //@START-TEST
@@ -135,3 +135,4 @@ const RXS = createRXObj(LANG_TERMS, SPECIAL_CASES);
 })();
 //@END-TEST
 
+*/

@@ -35,7 +35,7 @@ module.exports = merge(common, {
                     unused: true,
                     inline: true,
                     join_vars: true,
-                    cascade: true,
+                    //cascade: true,
                     collapse_vars: true,
                     reduce_vars: true,
                 }

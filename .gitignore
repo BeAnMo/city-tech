@@ -5,3 +5,6 @@ client_secret.json
 *.swp
 
 webpack.config.js-bak
+
+ignore-processing-2.js
+ignore-processing.js

@@ -45,13 +45,13 @@ export const App = {
 };
 
 /* initialize app */
+console.time('initAndRender');
 (() => {
     /* Object extensions
              Terms -------> Index
         App -^-> Summaries -^-> Graph
     */
     const initAndRender = jsonArr => {
-        console.time('initAndRender');
         App.ajax = jsonArr;
         App.table.innerHTML = '';
         App.graph.innerHTML = '';

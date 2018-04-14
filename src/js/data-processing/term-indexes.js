@@ -31,6 +31,7 @@ function stringValuesToArray(acc, obj){
     return Object.assign(acc, result);
 }
 
+/*
 //@START-TEST
 (() => {
     const acc = { a: [3, 5], c: [1,2] };
@@ -43,3 +44,4 @@ function stringValuesToArray(acc, obj){
     console.assert(toTest({}, t0).d === undefined, 'stringValuesToArray: 3');
     console.assert(toTest(acc, t0).b[0] === 2, 'stringValuesToArray: 3');
 })();//@END-TEST
+*/
