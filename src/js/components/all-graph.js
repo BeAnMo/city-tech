@@ -54,6 +54,7 @@ const options = {
 
 
 export function Graph(nodes, links, graph, size){
+    console.log(nodes, links, graph, size)
     const _nodes = new DataSet(nodes);
     const edges = new DataSet(links);
     const data = {
