@@ -1,24 +1,31 @@
-/* creates a single RX of multiple given metonyms */
-export function createMetonymRXs(metonyms){
-    return metonyms.reduce((base, metonym, index) => {
-        if(index === 0){
-            return base + createPhraseRX(metonym);
-        } else {
-            return base + '|' + createPhraseRX(metonym);
-        }
-    }, '');
+/**
+ * @description Creates a single RX string
+ * from multiple given metonyms.
+ *
+ * @param {[String]} metonyms
+ *
+ * @return {String} RX string
+ */
+export function createMetonymRXs([first, ...rest]) {
+  return rest.reduce((base, metonym) => {
+    return base + '|' + createPhraseRX(metonym);
+  }, createPhraseRX(first));
 }
 
+/**
+ * @description Creates an RX string to filter from
+ * text. It can be at the start/end of a text or can be
+ * surrounded by non-letter characters:
+ * "hello", "/hello/", "hello1", will match but
+ * "ahello" or "hellop" will not.
+ *
+ * @param {String} phrase
+ *
+ * @return {String} regexp String
+ */
+function createPhraseRX(phrase) {
+  const hasSpace =
+    phrase.indexOf(' ') > -1 ? phrase.split(' ').join('\\s') : phrase;
 
-/* creates a RX string to filter from text
-   can be at start/end of a text
-   can be surrounded by non-letter characters:
-   'hello', '/hello/', ',hello1' will match,
-   but not 'ahello' or 'hellop' */ 
-function createPhraseRX(phrase){
-    const hasSpace = phrase.indexOf(' ') > -1 ?
-          phrase.split(' ').join('\\s') :
-          phrase;
-    
-    return `(^|[^A-Za-z])${hasSpace}($|[^A-Za-z])`;   
+  return `(^|[^A-Za-z])${hasSpace}($|[^A-Za-z])`;
 }

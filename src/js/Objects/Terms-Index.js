@@ -1,4 +1,5 @@
-import { createIndexes, presentTermsWithKey } from '../data-processing/index';
+import { unwind, invertedIndex } from '../data-processing/wranglers';
+
 // termsIndex & eachIndexLength are the major time sinks
 // both are ~30ms to calculate
 /* to be extended by App
@@ -10,35 +11,49 @@ TermIndex:
 }
 */
 export const TermsIndex = {
-    get presentTerms() {
-        return this.Summaries.map(s => {
-            return presentTermsWithKey(s.summary, s.id, this.RXS);
-        }); 
-    },
-    get termsIndex(){
-        return createIndexes(this.presentTerms);
-    },
-    get eachIndexLength(){ // this takes almost 500ms to process!!!!!
-        return getLengths(this.termsIndex, this.inputs);
-    }
-    /*eachIndexLength: false,
-    setIndexLength(){ // .reduce version ~480-500ms, for loop < 40ms  
-        return this.eachIndexLength = getLengths(this.termsIndex);
-    }*/
+  get presentTerms() {
+    const present = summary => presentTerms(summary, this.RXS);
+
+    return this.Summaries.map(s => {
+      return {
+        id: s.id,
+        terms: present(s.summary)
+      };
+    });
+  },
+  get termsIndex() {
+    const unwound = unwind('terms', this.presentTerms);
+
+    return invertedIndex(({ id }) => id, 'terms', unwound);
+  },
+  get eachIndexLength() {
+    // this takes almost 500ms to process!!!!!
+    return getLengths(this.termsIndex, this.inputs);
+  }
 };
 
+/**
+ * @param {String} txt
+ * @param {[{ lang: String, rx: RegExp }]} rxs
+ *
+ * @return {[String]}
+ */
+function presentTerms(txt, rxs) {
+  return rxs.filter(({ rx }) => rx.test(txt)).map(({ lang }) => lang);
+}
 
-function getLengths(index, inputs){
-    let result = [];
+function getLengths(index, inputs) {
+  const keys = Object.keys(index);
+  let results = [];
 
-    for(let term in index){
-        result.push({ 
-            id: term, 
-            label: term, 
-            value: index[term].length,
-            group: inputs[term].fromLanguage 
-        });
-    }
+  for (const key of keys) {
+    results.push({
+      id: key,
+      label: key,
+      value: index[key].length,
+      group: inputs[key].fromLanguage
+    });
+  }
 
-    return result;
+  return results;
 }

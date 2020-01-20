@@ -1,63 +1,53 @@
-import { getUrls } from './fetch-sheet';
+import { getJsonParallel } from './fetch-sheet';
 import { SUMMARIES_URL, TERMS_URL } from './inputs';
-import {
-    Terms,
-    Summaries,
-    TermsIndex,
-    GraphData
-} from './Objects';
-import { 
-    ResultsTable, 
-    NoRefsList, 
-    Graph
-} from './components/index';
+import { Terms, Summaries, TermsIndex, GraphData } from './Objects';
+import { ResultsTable, NoRefsList, Graph } from './components/index';
 
-
-function render(target, html){
-    if(typeof(html) === 'string'){
-        return target.innerHTML = html;
-    } else {
-        return target.appendChild(html);
-    }
+function render(target, html) {
+  if (typeof html === 'string') {
+    return (target.innerHTML = html);
+  } else {
+    return target.appendChild(html);
+  }
 }
-
 
 /* Object for working with app in web console: 'App' */
 export const App = {
+  // unfiltered GSheets response
+  response: {},
+  set ajax([Summaries, Terms]) {
+    return Object.assign(this.response, {
+      Terms,
+      Summaries
+    });
+  },
 
-    // unfiltered GSheets response
-    response: {},
-    set ajax(jsonArr){
-        return Object.assign(this.response, { 
-            Terms: jsonArr[1], Summaries: jsonArr[0] 
-        });
-    },
+  // DOM Objects
+  table: document.getElementById('resultsTable'),
+  graph: document.getElementById('resultsGraph'),
+  noRefsList: document.getElementById('noRefsList'),
 
-    // DOM Objects
-    table: document.getElementById('resultsTable'),
-    graph: document.getElementById('resultsGraph'),
-    noRefsList: document.getElementById('noRefsList'),
-      
-    // for REPL debugging
-    debug: {
-        // not working with differenct webpack configs :(
-    }
+  // for REPL debugging
+  debug: {
+    // not working with differenct webpack configs :(
+  }
 };
 
 /* initialize app */
-console.time('initAndRender');
 (() => {
-    /* Object extensions
+  /* Object extensions
              Terms -------> Index
         App -^-> Summaries -^-> Graph
     */
-    const initAndRender = jsonArr => {
-        App.ajax = jsonArr;
-        App.table.innerHTML = '';
-        App.graph.innerHTML = '';
 
-        const response = App.response;
-        /* extensions
+  const initAndRender = jsonArr => {
+    console.time('initAndRender');
+    App.ajax = jsonArr;
+    App.table.innerHTML = '';
+    App.graph.innerHTML = '';
+
+    const response = App.response;
+    /* extensions
         - assigning a whole object, like Object.assign(TermsIndex, SUMMARIES, TERMS)
           is slow, so only assign the data that is needed
           doing this dropped the time for 'extensions' from ~550ms to ~40ms
@@ -70,53 +60,36 @@ console.time('initAndRender');
           - Object.assign(a, b)
           - {...a, [prop]: b[prop]}
           - { [prop1]: a.prop1, [prop2]: b.prop2 }
-        */      
-        const TERMS = Object.assign(Terms, { response });
-        const SUMMARIES = Object.assign(Summaries, { response });
-        const TERMS_INDEX = Object.assign(TermsIndex, { 
-            Summaries: SUMMARIES.Summaries,
-            RXS: TERMS.RXS,
-            inputs: TERMS.TermInputs
-        });
-        let indexLength = TERMS_INDEX.eachIndexLength;
-        let termsindex = TERMS_INDEX.termsIndex;
+        */
 
-        const GRAPH = Object.assign(GraphData, { // this is the big time sink
-            response,
-            // what to do with these 2?
-            //termsIndex: TERMS_INDEX.termsIndex,
-            termsIndex: termsindex,
-        });
+    const TERMS = Object.assign(Terms, { response });
+    const SUMMARIES = Object.assign(Summaries, { response });
+    const TERMS_INDEX = Object.assign(TermsIndex, {
+      Summaries: SUMMARIES.Summaries,
+      RXS: TERMS.RXS,
+      inputs: TERMS.TermInputs
+    });
+    let indexLength = TERMS_INDEX.eachIndexLength;
+    let termsindex = TERMS_INDEX.termsIndex;
 
-        render(
-            App.table, 
-            ResultsTable(
-                indexLength,
-                SUMMARIES.totalSummaries, 
-                GRAPH.postedDate
-            )
-        );
+    const GRAPH = Object.assign(GraphData, {
+      // this is the big time sink
+      response,
+      // what to do with these 2?
+      //termsIndex: TERMS_INDEX.termsIndex,
+      termsIndex: termsindex
+    });
 
-        Graph(
-            indexLength, 
-            GRAPH.graphLinks, 
-            App.graph, 
-            GRAPH.graphSize
-        );          
+    render(App.table, ResultsTable(SUMMARIES.totalSummaries, GRAPH.postedDate));
 
-        render(
-            App.noRefsList, 
-            NoRefsList(
-                TERMS.allWithNoRefs(termsindex)
-            )
-        );
+    Graph(indexLength, GRAPH.graphLinks, App.graph, GRAPH.graphSize);
 
-        console.timeEnd('initAndRender');
-    };
+    render(App.noRefsList, NoRefsList(TERMS.allWithNoRefs(termsindex)));
 
-    return getUrls(SUMMARIES_URL, TERMS_URL)
-        .then(initAndRender)
-        .catch(console.log);
+    console.timeEnd('initAndRender');
+  };
+
+  return getJsonParallel([SUMMARIES_URL, TERMS_URL])
+    .then(initAndRender)
+    .catch(console.log);
 })();
-
-

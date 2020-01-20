@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack-dev-server --open --config webpack.dev.js",
+    "start": "webpack-dev-server --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js"
   },
   "repository": {
@@ -26,11 +26,10 @@
     "style-loader": "^0.19.1",
     "uglifyjs-webpack-plugin": "^1.2.4",
     "webpack": "^3.11.0",
-    "webpack-dev-server": "^2.11.2",
+    "webpack-dev-server": "^2.11.5",
     "webpack-merge": "^4.1.2"
   },
   "dependencies": {
-    "d3": "^4.13.0",
     "ejs": "^2.5.8",
     "vis": "^4.21.0"
   }

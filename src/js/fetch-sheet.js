@@ -1,25 +1,16 @@
+async function getJson(url) {
+  const fetched = await fetch(url, { mode: 'cors' });
+  const json = await fetched.json();
 
-async function getJSON(url){
-    const fetched = await fetch(url, { mode: 'cors' });
-    const json = await fetched.json();
-    
-    return json;
+  return json;
 }
 
-async function getUrls(...urls){
-    var promises = [];
-    
-    for(var i = 0; i < urls.length; i++){
-        promises.push(getJSON(urls[i]));
-    }
-    
-    let results = Promise.all(promises);
-    
-    return results;
+/**
+ * @typedef { Number | String | Boolean | Array | Object } JSON
+ * @param {[String]} urls
+ *
+ * @return {Promise<JSON>}
+ */
+export function getJsonParallel(urls) {
+  return Promise.all(urls.map(getJson));
 }
-
-
-export {
-    getUrls
-};
-
